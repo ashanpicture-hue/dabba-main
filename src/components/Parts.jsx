@@ -3,18 +3,18 @@ import { shrinkImage } from "../lib/api.js";
 import { rs, fmtDate, STATUS, PAY } from "../lib/core.js";
 
 /** Pickup or delivery, area, name, phone, address. Shared by the order and custom request forms. */
-export function CustomerFields({ shop, f, setF, notes = true }) {
+export function CustomerFields({ shop, f, setF, notes = true, fulfilment = true }) {
   const set = (k) => (e) => setF((x) => ({ ...x, [k]: e.target.value }));
   return (
     <>
-      {shop.pickup_enabled && shop.delivery_zones?.length > 0 && (
+      {fulfilment && shop.pickup_enabled && shop.delivery_zones?.length > 0 && (
         <div className="row" role="radiogroup" aria-label="Pickup or delivery">
           <label className="check"><input type="radio" name="ff" checked={f.fulfilment === "delivery"} onChange={() => setF((x) => ({ ...x, fulfilment: "delivery" }))} />Delivery</label>
           <label className="check"><input type="radio" name="ff" checked={f.fulfilment === "pickup"} onChange={() => setF((x) => ({ ...x, fulfilment: "pickup" }))} />Pickup</label>
         </div>
       )}
-      {f.fulfilment === "pickup" && shop.pickup_address && <p className="small muted" style={{ margin: 0 }}>Pickup from {shop.pickup_address}</p>}
-      {f.fulfilment === "delivery" && (
+      {fulfilment && f.fulfilment === "pickup" && shop.pickup_address && <p className="small muted" style={{ margin: 0 }}>Pickup from {shop.pickup_address}</p>}
+      {fulfilment && f.fulfilment === "delivery" && (
         <label htmlFor="zone">Delivery area
           <select id="zone" value={f.zone} onChange={set("zone")} required>
             <option value="">Choose your area</option>
@@ -24,7 +24,7 @@ export function CustomerFields({ shop, f, setF, notes = true }) {
       )}
       <label htmlFor="name">Name<input id="name" value={f.customer_name} onChange={set("customer_name")} autoComplete="name" required /></label>
       <label htmlFor="phone">WhatsApp number<input id="phone" value={f.customer_phone} onChange={set("customer_phone")} inputMode="tel" autoComplete="tel" placeholder="0300 1234567" required /></label>
-      {f.fulfilment === "delivery" && <label htmlFor="addr">Full address<textarea id="addr" value={f.address} onChange={set("address")} autoComplete="street-address" placeholder="House, street, block, area" /></label>}
+      {fulfilment && f.fulfilment === "delivery" && <label htmlFor="addr">Full address<textarea id="addr" value={f.address} onChange={set("address")} autoComplete="street-address" placeholder="House, street, block, area" /></label>}
       {notes && <label htmlFor="notes">Note for the baker<input id="notes" value={f.notes} onChange={set("notes")} placeholder="Optional: allergies, timing" /></label>}
     </>
   );

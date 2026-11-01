@@ -15,7 +15,13 @@ export default function Status() {
   const [processing, setProcessing] = useState(false);
   const load =useCallback(() => api.orderByCode(code).then(setInfo).catch((e) => { setError(e.message); setInfo(null); }), [code]);
   useEffect(() => { load(); const t = setInterval(load, 60000); return () => clearInterval(t); }, [load]);
-  useEffect(() => { if (info?.shop) document.title = `Order ${info.order.code} · ${info.shop.name}`; }, [info]);
+  useEffect(() => {
+    if (info?.shop) document.title = `Order ${info.order.code} · ${info.shop.name}`;
+    const meta = document.querySelector('meta[name="robots"]') || document.createElement('meta');
+    meta.name = 'robots';
+    meta.content = 'noindex, nofollow';
+    document.head.appendChild(meta);
+  }, [info]);
 
   if (info === undefined) return <div className="wrap narrow" style={{ paddingBlock: 64 }}><p className="muted">Loading your order…</p></div>;
   if (!info) return (

@@ -1,0 +1,20 @@
+# Dabba
+> Preorder links for home bakers in Pakistan. One order link: menu with prices, daily limits, deposits, and WhatsApp updates.
+
+Dabba helps home bakers take preorders online without juggling Instagram DMs. Bakers share one link in their bio — customers see the menu, pick an open date, pay an advance by bank, Raast, or wallet, and upload a screenshot. The baker gets an order list, a daily baking list, and one-tap WhatsApp messages. Built for Pakistan, with Rupee pricing and local payment methods.
+
+## Primary pages
+
+- [Home](https://dabba.vercel.app/): Landing page explaining how Dabba works for home bakers — from "price?" to paid order without a single DM.
+- [Sample Bakery](https://dabba.vercel.app/s/cocoa-crumb): Demo shop page showing a menu with prices, sizes, flavours, and date picker.
+- [Custom Cake Request](https://dabba.vercel.app/s/cocoa-crumb/custom): Form for customers to request custom cakes with inspiration photos and a quote that expires.
+- [Order Tracking](https://dabba.vercel.app/o/K7Q2M9): Customer-facing order status page showing progress, payment state, and WhatsApp contact.
+- [Pricing](https://dabba.vercel.app/#pricing): Simple monthly plans — Starter free up to 20 orders/month, Baker Rs 1,499/month, Bakery Rs 3,499/month. No commission on sales.
+- [Privacy](https://dabba.vercel.app/privacy): Plain-language privacy summary covering data collection, storage, and user choices.
+- [Baker Sign In](https://dabba.vercel.app/login): Sign-in page for bakers to access their dashboard.
+- [Baker Dashboard](https://dabba.vercel.app/app): Live order alerts, daily baking list, menu editor, recipe costing, and settings.
+
+## Optional reference
+
+- [Sources](https://dabba.vercel.app/#sources): Industry sources cited on the landing page, including bakery guides and Pakistan home baker features.
+- [FAQ](https://dabba.vercel.app/#faq): Frequently asked questions about payments, customer accounts, WhatsApp, alerts, pricing, and food licences.

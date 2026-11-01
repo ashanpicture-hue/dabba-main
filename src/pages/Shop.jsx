@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import { api } from "../lib/api.js";
 import { availableDates, fmtDate, rs, priceOrder, validateCustomer, configureLine, needsPicker, lineLabel, DAY_NAMES } from "../lib/core.js";
 import { CustomerFields, PayBox, DatePicker, initialFulfilment } from "../components/Parts.jsx";
+import { localBusinessSchema } from "../lib/schema.js";
 import Feedback from "../components/Feedback.jsx";
 
 /** Popup for choosing size, flavour and a message before adding an item. */
@@ -43,12 +44,49 @@ function OptionPicker({ item, onAdd, onClose }) {
   );
 }
 
+/** Popup for delivery area, full address and delivery date. */
+function DeliverySheet({ shop, days, f, setF, date, setDate, onClose }) {
+  const [err, setErr] = useState("");
+  const set = (k) => (e) => setF((x) => ({ ...x, [k]: e.target.value }));
+  function save(e) {
+    e.preventDefault();
+    if (!f.zone) return setErr("Choose your delivery area.");
+    if (!f.address.trim()) return setErr("Add your full address.");
+    if (!date) return setErr("Pick a delivery date.");
+    onClose();
+  }
+  return (
+    <div className="modal-bg" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <form className="modal modal-tall stack" onSubmit={save} aria-label="Delivery details">
+        <h3>Delivery details</h3>
+        <label htmlFor="zone">Delivery area
+          <select id="zone" value={f.zone} onChange={set("zone")}>
+            <option value="">Choose your area</option>
+            {shop.delivery_zones.map((z) => <option key={z.name} value={z.name}>{z.name} · {rs(z.fee)}</option>)}
+          </select>
+        </label>
+        <label htmlFor="addr">Full address<textarea id="addr" value={f.address} onChange={set("address")} autoComplete="street-address" placeholder="House, street, block, area" /></label>
+        <div className="stack" style={{ gap: 8 }}>
+          <b style={{ fontSize: 14 }}>Delivery date</b>
+          <DatePicker days={days} value={date} onChange={setDate} />
+        </div>
+        {err && <div className="err" role="alert">{err}</div>}
+        <div className="row between">
+          <button type="button" className="btn ghost" onClick={onClose}>Close</button>
+          <button className="btn primary">Save delivery details</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 export default function Shop() {
   const { slug } = useParams();
   const nav = useNavigate();
   const [data, setData] = useState(undefined);
   const [cart, setCart] = useState([]); // [{ key, item_id, qty, choices, message }]
   const [picking, setPicking] = useState(null);
+  const [dlvOpen, setDlvOpen] = useState(false);
   const [date, setDate] = useState("");
   const [f, setF] = useState({ fulfilment: "", zone: "", customer_name: "", customer_phone: "", address: "", notes: "" });
   const [proof, setProof] = useState(null);
@@ -59,7 +97,7 @@ export default function Shop() {
   useEffect(() => {
     api.publicShop(slug).then((d) => {
       setData(d);
-      if (d) { document.title = `${d.shop.name} · Order online`; setF((x) => ({ ...x, fulfilment: initialFulfilment(d.shop) })); }
+      if (d) { document.title = `${d.shop.name} · Order online`; setF((x) => ({ ...x, fulfilment: d.shop.pickup_enabled ? "pickup" : initialFulfilment(d.shop) })); }
     }).catch((e) => { setError(e.message); setData(null); });
   }, [slug]);
 
@@ -102,6 +140,7 @@ export default function Shop() {
     e.preventDefault();
     setError("");
     if (!lines.length) return setError("Add at least one item.");
+    if (f.fulfilment === "delivery" && (!f.zone || !f.address.trim() || !date)) { setDlvOpen(true); return setError("Add your delivery details."); }
     if (!date) return setError("Pick a date.");
     const draft = { ...f, lines, due_date: date, zone: f.fulfilment === "delivery" ? f.zone : null };
     const bad = validateCustomer(draft); if (bad) return setError(bad);
@@ -114,8 +153,11 @@ export default function Shop() {
     } catch (err) { setError(err.message); setBusy(false); }
   }
 
+  const shopSchema = data ? localBusinessSchema(data.shop) : null;
+
   return (
     <>
+      {shopSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(shopSchema) }} />}
       <form onSubmit={submit}>
         <div className="wrap narrow stack" style={{ paddingBlock: "28px 24px", gap: 20 }}>
           <header className="stack" style={{ gap: 4 }}>
@@ -136,7 +178,7 @@ export default function Shop() {
             {items.map((it) => (
               <div key={it.id} className="card row between" style={{ alignItems: "flex-start" }}>
                 <div className="row" style={{ alignItems: "flex-start", flex: 1, minWidth: 0 }}>
-                  {it.image_url && <img src={it.image_url} alt="" className="thumb" style={{ width: 84, height: 84 }} />}
+                  {it.image_url && <img src={it.image_url} alt={it.name} className="thumb" style={{ width: 84, height: 84 }} loading="lazy" />}
                   <div style={{ minWidth: 0 }}>
                     <b>{it.name}</b>
                     {it.description && <div className="small muted">{it.description}</div>}
@@ -177,14 +219,35 @@ export default function Shop() {
             )}
           </section>
 
-          <section className="stack" aria-labelledby="date-h">
-            <h2 id="date-h" style={{ fontSize: "1.4rem" }}>2. Pick a date</h2>
-            <DatePicker days={days} value={date} onChange={setDate} />
+          <section className="stack" aria-labelledby="ff-h">
+            <h2 id="ff-h" style={{ fontSize: "1.4rem" }}>2. Pickup or delivery</h2>
+            {shop.pickup_enabled && shop.delivery_zones?.length > 0 && (
+              <div className="seg" role="group" aria-label="Pickup or delivery">
+                <button type="button" aria-pressed={f.fulfilment === "pickup"} onClick={() => setF((x) => ({ ...x, fulfilment: "pickup" }))}>Pickup</button>
+                <button type="button" aria-pressed={f.fulfilment === "delivery"} onClick={() => { setF((x) => ({ ...x, fulfilment: "delivery" })); setDlvOpen(true); }}>Delivery</button>
+              </div>
+            )}
+            {f.fulfilment === "pickup" && (
+              <>
+                {shop.pickup_address && <p className="small muted" style={{ margin: 0 }}>Pickup from {shop.pickup_address}</p>}
+                <b id="date-h" style={{ fontSize: 14 }}>Pick a date</b>
+                <DatePicker days={days} value={date} onChange={setDate} />
+              </>
+            )}
+            {f.fulfilment === "delivery" && (
+              <button type="button" className="card row between" style={{ textAlign: "left", cursor: "pointer", font: "inherit", color: "inherit" }} onClick={() => setDlvOpen(true)}>
+                <div>
+                  <b>{f.zone && f.address.trim() && date ? `Delivery to ${f.zone}` : "Add delivery details"}</b>
+                  <div className="small muted">{f.zone && f.address.trim() && date ? `${fmtDate(date, { weekday: "short", day: "numeric", month: "short" })} · ${f.address.trim()}` : "Area, address and date"}</div>
+                </div>
+                <span className="btn sm">{f.zone && f.address.trim() && date ? "Edit" : "Add"}</span>
+              </button>
+            )}
           </section>
 
           <section className="stack" aria-labelledby="you-h">
             <h2 id="you-h" style={{ fontSize: "1.4rem" }}>3. Your details</h2>
-            <CustomerFields shop={shop} f={f} setF={setF} />
+            <CustomerFields shop={shop} f={f} setF={setF} fulfilment={false} />
           </section>
 
           {priced && shop.deposit_pct > 0 && (
@@ -210,6 +273,7 @@ export default function Shop() {
           </div>
         </div>
       </form>
+      {dlvOpen && <DeliverySheet shop={shop} days={days} f={f} setF={setF} date={date} setDate={setDate} onClose={() => setDlvOpen(false)} />}
       {picking && <OptionPicker item={picking} onAdd={(sel) => addConfigured(picking, sel)} onClose={() => setPicking(null)} />}
       <div className="wrap narrow small muted row between" style={{ paddingBlock: "16px 40px" }}><span>Order page by <Link to="/">Dabba</Link></span><Feedback inline role="customer" shopId={shop.id} label="Problem ordering?" prompt="Was ordering easy?" /></div>
     </>

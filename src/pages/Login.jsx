@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api, DEMO } from "../lib/api.js";
 
@@ -8,6 +8,13 @@ export default function Login() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="robots"]') || document.createElement('meta');
+    meta.name = 'robots';
+    meta.content = 'noindex, nofollow';
+    document.head.appendChild(meta);
+  }, []);
 
   async function go(e) {
     e.preventDefault(); setError(""); setBusy(true);

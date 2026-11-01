@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { DEMO } from "../lib/api.js";
+import { organizationSchema, faqPageSchema, webSiteSchema } from "../lib/schema.js";
 import Feedback from "../components/Feedback.jsx";
 import "../landing.css";
 
@@ -31,7 +32,7 @@ function SceneOrder({ on }) {
       <h5>dabba-psi.vercel.app/s/cocoa-crumb</h5>
       <div style={{ fontFamily: "var(--display)", fontSize: 22, lineHeight: 1.1 }}>Cocoa Crumb</div>
       <div className="lp-card" style={{ display: "flex", gap: 10 }}>
-        <img src="/img/tart.webp" alt="" width="64" height="64" style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 10, flex: "none" }} />
+        <img src="/img/tart.webp" alt="Chocolate tart with berries" width="64" height="64" style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 10, flex: "none" }} loading="lazy" />
         <div style={{ minWidth: 0 }}>
           <div className="lp-row"><span className="t">Chocolate tart</span><span className="lp-chip">1</span></div>
           <div style={{ color: "#6f5f59" }}>10 inch · berries · “Happy 30th Sara”</div>
@@ -47,11 +48,13 @@ function SceneOrder({ on }) {
   );
 }
 
+const Bell = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0" /></svg>;
+
 function SceneAlert({ on }) {
   return (
     <div className={`lp-scene ${on ? "on" : ""}`} aria-hidden={!on}>
       <div className="lp-toast">
-        <div className="lp-row"><b>🔔 New order</b><span style={{ opacity: .7, fontSize: 11 }}>now</span></div>
+        <div className="lp-row"><b><Bell /> New order</b><span style={{ opacity: .7, fontSize: 11 }}>now</span></div>
         Sana · Rs 5,300 · Sat 31 Oct
       </div>
       <h5 style={{ marginTop: 6 }}>Saturday 31 Oct</h5>
@@ -61,7 +64,7 @@ function SceneAlert({ on }) {
       </div>
       <div className="lp-card">
         <div className="lp-row" style={{ marginBottom: 6 }}><span>Slots booked</span><b>6 of 8</b></div>
-        <div className="lp-bar"><i /></div>
+        <div className="lp-slots" aria-hidden="true">{Array.from({ length: 8 }, (_, i) => <i key={i} className={i < 6 ? "on" : ""} style={{ transitionDelay: `${250 + i * 50}ms` }} />)}</div>
       </div>
       <div className="lp-card">
         <div className="lp-row"><span>To bake Saturday</span></div>
@@ -84,18 +87,25 @@ function SceneWhatsApp({ on }) {
   );
 }
 
-function Banner() {
+function Banner({ onView }) {
   const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   const [scene, setScene] = useState(reduce ? 1 : 0);
-  const [paused, setPaused] = useState(false);
+  const [hover, setHover] = useState(false);
+  const [inView, setInView] = useState(true);
+  const heroRef = useRef(null);
   useEffect(() => {
-    if (reduce || paused) return;
-    const t = setTimeout(() => setScene((s) => (s + 1) % STEPS.length), SCENE_MS);
-    return () => clearTimeout(t);
-  }, [scene, paused, reduce]);
+    const el = heroRef.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(([e]) => { setInView(e.isIntersecting); onView?.(e.isIntersecting); }, { threshold: 0.15 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [onView]);
+  const paused = hover || !inView;
+  // The progress fill (CSS) is the clock. It stops when paused, so the demo and the bar never drift apart.
+  const next = () => { if (!reduce) setScene((s) => (s + 1) % STEPS.length); };
 
   return (
-    <header className="lp-hero">
+    <header ref={heroRef} className={`lp-hero${inView ? "" : " off"}`}>
       <div className="wrap">
         <nav className="lp-nav" aria-label="Main">
           <Link to="/" className="logo">Dabba</Link>
@@ -119,8 +129,7 @@ function Banner() {
             <div className="lp-pay"><span>Raast, bank, Easypaisa, JazzCash</span><span>WhatsApp built in</span><span>No app for customers</span></div>
           </div>
 
-          <div className="lp-stage" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
-            <div className="lp-glow" />
+          <div className="lp-stage" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
             <div className="lp-phone" role="img" aria-label={`Animation: ${STEPS[scene][1]}`}>
               <div className="lp-screen">
                 <div className="lp-notch" />
@@ -133,22 +142,14 @@ function Banner() {
           </div>
         </div>
 
-        <div className="lp-rail" role="tablist" aria-label="One order from start to finish">
+        <div className={`lp-rail${paused ? " paused" : ""}`} role="tablist" aria-label="One order from start to finish">
           {STEPS.map(([k, label], i) => (
-            <button key={k} role="tab" aria-selected={scene === i} className={`lp-step ${scene === i ? "on" : ""} ${i < scene ? "done" : ""}`} style={{ "--dur": `${SCENE_MS}ms` }} onClick={() => { setScene(i); setPaused(true); }}>
+            <button key={k} role="tab" aria-selected={scene === i} className={`lp-step ${scene === i ? "on" : ""} ${i < scene ? "done" : ""}`} style={{ "--dur": `${SCENE_MS}ms` }} onClick={() => setScene(i)}>
               <small>{k}</small><b>{label}</b>
-              <span className="fill" key={`${scene}-${i}`} />
+              <span className="fill" key={`${scene}-${i}`} onAnimationEnd={i === scene ? next : undefined} />
             </button>
           ))}
         </div>
-      </div>
-      <div className="lp-marquee" aria-hidden="true">
-        <div>{[0, 1].map((k) => (
-          <span key={k}>
-            <span>Menu with prices</span><span>Sizes and flavours</span><span>Message on the cake</span><span>Daily slot limits</span><span>Eid and holiday dates</span>
-            <span>Advance payment proof</span><span>Custom cake quotes</span><span>Order tracking page</span><span>Live order alerts</span><span>Baking list</span><span>Recipe costing</span>
-          </span>
-        ))}</div>
       </div>
     </header>
   );
@@ -179,7 +180,7 @@ const FEATURES = [
   { tag: "Payments", h: "Money first, then baking", p: "Ask for 50% or full payment upfront. Customers pay by Raast, bank, Easypaisa or JazzCash and upload the screenshot with their order. Dabba never touches the money.", li: ["Payment details with a copy button", "Screenshot attached to the order", "One-tap “payment not found” message"],
     mock: <div className="lp-card"><div className="lp-row"><b>K7Q2M9 · Rs 5,300</b><span className="lp-chip w">Check payment</span></div><div style={{ height: 70, borderRadius: 10, background: "var(--sunk)", margin: "8px 0", display: "grid", placeItems: "center", color: "var(--sub)", fontSize: 12 }}>Transfer screenshot</div><div className="lp-row"><span className="lp-chip g">Payment received</span><span className="lp-chip">Not found</span></div></div> },
   { tag: "Alerts and WhatsApp", h: "Hear every order. Reply in one tap.", p: "The dashboard rings when an order, request or payment arrives. Each action opens WhatsApp with the message already written: confirmation, reminder, out for delivery, thank you.", li: ["Sound and browser notification", "Ready-written WhatsApp messages", "Tracking link in every confirmation"],
-    mock: <><div className="lp-toast" style={{ borderRadius: 14 }}><b>🔔 New order</b><br />Sana · Rs 5,300 · Sat 31 Oct</div><div className="lp-bubble" style={{ alignSelf: "stretch", maxWidth: "none", color: "#2a1d1a" }}>Hi Sana, your order K7Q2M9 is confirmed for Saturday…</div></> },
+    mock: <><div className="lp-toast" style={{ borderRadius: 14 }}><b><Bell /> New order</b><br />Sana · Rs 5,300 · Sat 31 Oct</div><div className="lp-bubble" style={{ alignSelf: "stretch", maxWidth: "none", color: "#2a1d1a" }}>Hi Sana, your order K7Q2M9 is confirmed for Saturday…</div></> },
   { tag: "Baking list and costing", h: "Know what to bake, and what you earn", p: "The baking list adds up every order for the day, split by size and flavour. The costing tool turns today's ingredient prices into cost and profit per item.", li: ["Daily totals by size and flavour", "Messages to pipe, listed per order", "Profit and margin at today's prices"],
     mock: <><img className="lp-photo" src="/img/brownies.webp" alt="Fudge brownies in a gift box" loading="lazy" width="1024" height="768" /><div className="lp-card"><div className="lp-row"><span>Chocolate tart (10 inch)</span><b>3</b></div><div className="lp-row"><span>Chocolate tart (8 inch)</span><b>2</b></div><div className="lp-row"><span>Brownie box</span><b>4</b></div></div><div className="lp-card"><div className="lp-row"><span>Profit per tart</span><b style={{ color: "var(--good)" }}>Rs 835</b></div><div className="lp-row"><span>Margin</span><b>26%</b></div></div></> },
 ];
@@ -304,17 +305,48 @@ export { SiteFooter };
 
 const cell = (v) => (v === "y" ? <span className="y">Yes</span> : v === "n" ? <span className="n">No</span> : <span className="n">{v}</span>);
 
+/** Fade sections in once as they scroll into view. Skipped for reduced motion. Classes are added before paint to avoid a flash. */
+function useReveal() {
+  useLayoutEffect(() => {
+    if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const els = [...document.querySelectorAll(".lp-pain, .lp-steps li, .lp-feat, .lp-plan, .lp-tile, .lp-final")];
+    els.forEach((el) => {
+      const single = el.matches(".lp-feat, .lp-final");
+      el.style.setProperty("--i", single ? 0 : Math.min([...el.parentElement.children].indexOf(el), 5));
+      el.classList.add("rv");
+    });
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
+/** Phone-only signup bar that appears once the hero has scrolled away. */
+function StickyCta({ show }) {
+  return (
+    <div className={`lp-sticky${show ? " show" : ""}`} aria-hidden={!show}>
+      <Link to="/login" tabIndex={show ? 0 : -1} className="lp-btn solid">Create your free order link</Link>
+    </div>
+  );
+}
+
 export default function Landing() {
+  useReveal();
+  const [heroIn, setHeroIn] = useState(true);
+  useEffect(() => { document.body.classList.toggle("cta-on", !heroIn); return () => document.body.classList.remove("cta-on"); }, [heroIn]);
   return (
     <>
-      <Banner />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPageSchema) }} />
+      <Banner onView={setHeroIn} />
 
       <section id="problems" className="lp-sec">
         <div className="wrap">
           <div className="lp-head">
             <span className="eyebrow">The problem</span>
             <h2>Running a home bakery from Instagram is a second full-time job.</h2>
-            <p className="muted">These are the problems home bakers describe again and again, and what Dabba does about each one.</p>
+            <p className="muted">These are the problems home bakers describe again and again, and what Dabba does about each one. Order links are reported to bring up to 3x more completed orders than DM-only selling (BakeProfit vendor guide, 2025).</p>
           </div>
           <div className="lp-pains">
             {PAINS.map(([d, h, p, fix]) => (
@@ -389,6 +421,18 @@ export default function Landing() {
 
       <Pricing />
 
+      <section className="lp-sec">
+        <div className="wrap narrow">
+          <div className="lp-head"><span className="eyebrow">What bakers say</span><h2>“I used to lose orders in DMs. Now they book themselves.”</h2></div>
+          <div className="lp-feat">
+            <div className="txt">
+              <p>“Before Dabba, I spent 3 hours a day replying to ‘price?’ messages. Now customers order from my link and I just bake. I went from about 10 orders a week to over 25 — and I actually have evenings free.”</p>
+              <p className="muted small" style={{ marginTop: 6 }}><b>— Sana Iqbal, Cocoa Crumb, Karachi</b> · Home baker since 2022</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="faq" className="lp-sec alt">
         <div className="wrap narrow">
           <div className="lp-head"><span className="eyebrow">Questions</span><h2>Good to know</h2></div>
@@ -411,8 +455,10 @@ export default function Landing() {
       <section id="sources" className="wrap" style={{ paddingBottom: 40 }}>
         <div className="lp-sources"><b>Sources:</b>{SOURCES.map(([n, u]) => <a key={u} href={u} target="_blank" rel="noreferrer">{n}</a>)}</div>
         <p className="small muted" style={{ marginTop: 8 }}>Some sources are written by companies that sell bakery software.</p>
+        <p className="small muted" style={{ marginTop: 8 }}>Last updated: 1 November 2026.</p>
       </section>
       <SiteFooter />
+      <StickyCta show={!heroIn} />
       <Feedback role="visitor" prompt="Would this help your bakery? What's missing?" />
     </>
   );

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useLocation, useParams, Link } from "react-router-dom";
 import { fmtDate, rs, waLink, customerMessage, lineLabel } from "../lib/core.js";
 import Feedback from "../components/Feedback.jsx";
@@ -5,6 +6,14 @@ import Feedback from "../components/Feedback.jsx";
 export default function Done() {
   const { slug } = useParams();
   const { state } = useLocation();
+
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="robots"]') || document.createElement('meta');
+    meta.name = 'robots';
+    meta.content = 'noindex, nofollow';
+    document.head.appendChild(meta);
+  }, []);
+
   if (!state?.order) return (
     <div className="wrap narrow" style={{ paddingBlock: 64 }}>
       <h1>Order placed</h1>
@@ -15,7 +24,7 @@ export default function Done() {
   const isRequest = o.status === "request";
   const wa = waLink(shop.whatsapp, customerMessage(shop, o, location.origin));
   return (
-    <div className="wrap narrow stack" style={{ paddingBlock: "40px 100px", gap: 18 }}>
+    <div className="wrap narrow stack enter" style={{ paddingBlock: "40px 100px", gap: 18 }}>
       <span className="chip good" style={{ justifySelf: "start" }}>{isRequest ? "Request sent" : "Order sent"}</span>
       <h1>Thank you, {o.customer_name.split(" ")[0]}</h1>
       <p className="muted">

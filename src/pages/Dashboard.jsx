@@ -16,6 +16,13 @@ export default function Dashboard() {
   const [shop, setShop] = useState(undefined);
   const [tab, setTab] = useState(() => { try { return localStorage.getItem("dabba-tab") || "orders"; } catch { return "orders"; } });
 
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="robots"]') || document.createElement('meta');
+    meta.name = 'robots';
+    meta.content = 'noindex, nofollow';
+    document.head.appendChild(meta);
+  }, []);
+
   useEffect(() => { api.session().then(setUser); return api.onAuth(setUser); }, []);
   useEffect(() => { if (user === null) nav("/login"); if (user) api.myShop().then(setShop).catch(() => setShop(null)); }, [user, nav]);
   useEffect(() => { try { localStorage.setItem("dabba-tab", tab); } catch {} }, [tab]);

@@ -17,6 +17,13 @@ export default function Request() {
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
+    const meta = document.querySelector('meta[name="robots"]') || document.createElement('meta');
+    meta.name = 'robots';
+    meta.content = 'noindex, nofollow';
+    document.head.appendChild(meta);
+  }, []);
+
+  useEffect(() => {
     api.publicShop(slug).then((d) => {
       setData(d);
       if (d) { document.title = `Custom cake · ${d.shop.name}`; setF((x) => ({ ...x, fulfilment: initialFulfilment(d.shop) })); }
@@ -85,7 +92,7 @@ export default function Request() {
           <div className="row">
             {photos.map((p, i) => (
               <div key={p.url} className="stack" style={{ gap: 4 }}>
-                <img src={p.url} alt={`Inspiration ${i + 1}`} className="thumb" style={{ width: 90, height: 90 }} />
+                <img src={p.url} alt={`Inspiration photo ${i + 1} for custom cake request`} className="thumb" style={{ width: 90, height: 90 }} loading="lazy" />
                 <button type="button" className="btn sm ghost" onClick={() => setPhotos((x) => x.filter((_, j) => j !== i))}>Remove</button>
               </div>
             ))}

@@ -1,6 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import "./styles.css";
 import Landing from "./pages/Landing.jsx";
@@ -21,20 +21,23 @@ const NotFound = () => (
 );
 
 function App() {
+  const { pathname } = useLocation();
   return (
     <>
       {DEMO && <div className="banner">Demo mode: everything you enter stays in this browser only.</div>}
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/s/:slug" element={<Shop />} />
-        <Route path="/s/:slug/done" element={<Done />} />
-        <Route path="/s/:slug/custom" element={<Request />} />
-        <Route path="/o/:code" element={<Status />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/app" element={<Dashboard />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div key={pathname} className={`page-wrap${pathname === "/" ? " home" : ""}`}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/s/:slug" element={<Shop />} />
+          <Route path="/s/:slug/done" element={<Done />} />
+          <Route path="/s/:slug/custom" element={<Request />} />
+          <Route path="/o/:code" element={<Status />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/app" element={<Dashboard />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
       <Analytics />
     </>
   );

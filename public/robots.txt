@@ -1,0 +1,66 @@
+# Dabba — robots.txt
+# Allow all AI search bots so they can cite Dabba in AI answers
+
+User-agent: *
+Allow: /
+
+# AI search bots — explicitly allowed for citation
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Disallow non-public, transactional, and admin routes
+Disallow: /app/
+Disallow: /login
+Disallow: /o/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://dabba.vercel.app/sitemap.xml

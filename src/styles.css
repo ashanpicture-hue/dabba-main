@@ -5,6 +5,9 @@
   --good: #1d6b47; --good-soft: #e2f2e9; --warn: #9a5b00; --warn-soft: #fbefd9; --bad: #b42318; --bad-soft: #fde8e6;
   --display: "Gloock", Georgia, serif; --body: "Outfit", "Segoe UI", system-ui, sans-serif;
   --r: 14px; color-scheme: light;
+  --md-ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --md-ease-move: cubic-bezier(0.25, 1, 0.5, 1);
+  --md-ease-press: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 @media (prefers-color-scheme: dark) {
   :root { --bg: #171211; --surface: #211a18; --sunk: #2a2220; --ink: #f3ebe7; --sub: #b7a7a0; --line: #3a2f2c;
@@ -30,15 +33,20 @@ p { margin: 0 0 .8em; }
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; }
 .sunk { background: var(--sunk); border-radius: var(--r); padding: 14px; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 15px var(--body); cursor: pointer; text-decoration: none; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 15px var(--body); cursor: pointer; text-decoration: none; transition: transform .1s var(--md-ease-press), border-color .2s var(--md-ease-enter), box-shadow .2s var(--md-ease-enter); }
 .btn:hover { border-color: var(--sub); }
+.btn:active { transform: scale(.97); }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .btn.primary:hover { filter: brightness(1.07); }
+.btn.primary:active { transform: scale(.97); filter: brightness(1.07); }
 .btn.wa { background: #1f9d55; border-color: #1f9d55; color: #fff; }
+.btn.wa:active { transform: scale(.97); }
 .btn.ghost { background: transparent; }
+.btn.ghost:active { transform: scale(.97); background: var(--sunk); }
 .btn.sm { min-height: 36px; padding: 6px 12px; font-size: 14px; }
+.btn.sm:active { transform: scale(.97); }
 .btn.block { width: 100%; }
-.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 label { display: grid; gap: 6px; font-weight: 600; font-size: 14px; }
 input, textarea, select { font: 16px var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; width: 100%; }
@@ -58,6 +66,8 @@ input[type=checkbox], input[type=radio] { width: 18px; height: 18px; accent-colo
 .tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
 .tab { flex: none; padding: 9px 14px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 14px var(--body); cursor: pointer; }
 .tab[aria-selected=true] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.tab:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.tab:active { transform: scale(.97); transition: transform .1s var(--md-ease-press); }
 .qty { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
 .qty button { width: 40px; height: 40px; border: 0; background: var(--sunk); color: var(--ink); font-size: 20px; cursor: pointer; }
 .qty span { min-width: 36px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -65,6 +75,8 @@ input[type=checkbox], input[type=radio] { width: 18px; height: 18px; accent-colo
 .date { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 12px; padding: 8px 6px; text-align: center; cursor: pointer; font: 500 13px var(--body); }
 .date b { display: block; font-size: 15px; }
 .date[aria-pressed=true] { border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); background: var(--accent-soft); }
+.date:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.date:active:not(:disabled) { transform: scale(.97); transition: transform .1s var(--md-ease-press); }
 .date:disabled { opacity: .45; cursor: not-allowed; text-decoration: line-through; }
 .total { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
 .total.big { font-size: 1.15rem; font-weight: 700; }
@@ -95,4 +107,45 @@ footer.site { border-top: 1px solid var(--line); margin-top: 48px; padding-block
   .feat.flip > :first-child { order: 0; }
   .hide-m { display: none !important; }
 }
-@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Page transition fade */
+/* Opacity only: a transform on this wrapper would mis-position fixed children (feedback button, modals). */
+@keyframes lp-page-fade { from { opacity: 0; } to { opacity: 1; } }
+.page-wrap { animation: lp-page-fade .25s var(--md-ease-enter); }
+.page-wrap.home { animation: none; }
+
+/* Shared motion. `translate` is separate from `transform`, so it never fights press and hover effects. */
+@keyframes md-rise { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0 0; } }
+@keyframes md-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes md-sheet { from { opacity: 0; translate: 0 24px; } to { opacity: 1; translate: 0 0; } }
+.modal-bg { animation: md-fade .18s ease-out; }
+.modal { animation: md-sheet .28s var(--md-ease-enter); }
+.enter > * { animation: md-rise .4s var(--md-ease-enter) both; }
+.enter > :nth-child(2) { animation-delay: 50ms; }
+.enter > :nth-child(3) { animation-delay: 100ms; }
+.enter > :nth-child(4) { animation-delay: 150ms; }
+.enter > :nth-child(n+5) { animation-delay: 200ms; }
+.ok[role="status"] { animation: md-rise .25s var(--md-ease-enter); }
+.tab { transition: background-color .15s ease, color .15s ease, border-color .15s ease; }
+.stars button { transition: color .15s ease, transform .12s var(--md-ease-press); }
+.stars button:active { transform: scale(.88); }
+.btn:disabled { transition: none; }
+
+/* Respect reduced motion for page transitions too */
+@media (prefers-reduced-motion: reduce) {
+  .page-wrap { animation: none !important; }
+}
+
+/* Order page: pickup / delivery switch and the delivery popup */
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.seg button { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 12px; padding: 12px; font: 600 15px var(--body); cursor: pointer; }
+.seg button[aria-pressed=true] { border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); background: var(--accent-soft); }
+.seg button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.modal-tall { max-height: 88vh; overflow-y: auto; overscroll-behavior: contain; }
