@@ -1,0 +1,43 @@
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { SiteFooter } from "./Landing.jsx";
+import Feedback from "../components/Feedback.jsx";
+
+/** Plain-language privacy summary. Not legal advice; to be reviewed before charging customers. */
+export default function Privacy() {
+  useEffect(() => { document.title = "Privacy · Dabba"; }, []);
+  const S = ({ h, children }) => <section className="stack" style={{ gap: 6 }}><h2 style={{ fontSize: "1.35rem", margin: 0 }}>{h}</h2>{children}</section>;
+  return (
+    <>
+      <div className="wrap narrow stack" style={{ paddingBlock: "28px 56px", gap: 22 }}>
+        <Link to="/" className="logo">Dabba</Link>
+        <div>
+          <h1 style={{ marginBottom: 6 }}>Privacy</h1>
+          <p className="muted" style={{ margin: 0 }}>Last updated 27 October 2026. Dabba is in early testing; this page will be updated as the service changes.</p>
+        </div>
+        <S h="What we collect">
+          <ul style={{ margin: 0, paddingInlineStart: 20 }}>
+            <li><b>Bakers:</b> email for sign-in, bakery name, WhatsApp number, menu, prices, payment details you choose to show, and settings.</li>
+            <li><b>Customers:</b> name, WhatsApp number, delivery address if needed, order details, payment screenshots and custom cake photos you upload.</li>
+            <li><b>Feedback:</b> anything you write in the feedback form, and contact details only if you add them.</li>
+            <li><b>Usage:</b> anonymous page visit counts through Vercel Analytics. No advertising trackers.</li>
+          </ul>
+        </S>
+        <S h="Who can see it">
+          <p className="muted" style={{ margin: 0 }}>Order details, payment screenshots and inspiration photos are visible only to the bakery you ordered from. Order tracking pages show your first name, the items and the order status, never your phone number or address. We don't sell personal data.</p>
+        </S>
+        <S h="Money">
+          <p className="muted" style={{ margin: 0 }}>Customers pay bakers directly by bank, Raast or wallet. Dabba never receives, holds or moves money, and never asks for card numbers.</p>
+        </S>
+        <S h="Where data is stored">
+          <p className="muted" style={{ margin: 0 }}>The website runs on Vercel. Order data, files and sign-in run on Supabase. Both may store data outside Pakistan.</p>
+        </S>
+        <S h="Your choices">
+          <p className="muted" style={{ margin: 0 }}>Ask the bakery to correct or delete your order, or use the feedback button to ask us to delete your data. Bakers can delete menu items and close their shop at any time.</p>
+        </S>
+      </div>
+      <SiteFooter />
+      <Feedback role="visitor" prompt="Questions about your data?" />
+    </>
+  );
+}
