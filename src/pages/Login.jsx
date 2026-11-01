@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Alert, AlertDescription } from "../components/ui/alert.jsx";
 import { useNavigate, Link } from "react-router-dom";
 import { api, DEMO } from "../lib/api.js";
+import { setPageSEO } from "../lib/seo.js";
 
 export default function Login() {
   const nav = useNavigate();
@@ -11,10 +12,12 @@ export default function Login() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    const meta = document.querySelector('meta[name="robots"]') || document.createElement('meta');
-    meta.name = 'robots';
-    meta.content = 'noindex, nofollow';
-    document.head.appendChild(meta);
+    setPageSEO({
+      title: "Sign In · Dabba Baker Dashboard",
+      description: "Sign in to your Dabba baker dashboard. Manage your menu, orders, baking list, and settings. One-time email link — no password needed.",
+      canonical: "https://dabba.vercel.app/login",
+      noIndex: true,
+    });
   }, []);
 
   async function go(e) {

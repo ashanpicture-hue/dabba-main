@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { DEMO } from "../lib/api.js";
 import { organizationSchema, faqPageSchema, webSiteSchema } from "../lib/schema.js";
 import { trackEvent } from "../lib/analytics.js";
+import { openCookieSettings } from "../lib/consent.js";
+import { setPageSEO } from "../lib/seo.js";
 import Feedback from "../components/Feedback.jsx";
 import "../landing.css";
 
@@ -286,7 +288,7 @@ function SiteFooter() {
           <nav className="lp-foot-cols" aria-label="Footer">
             <div><h4>Product</h4><a href="/#features">Features</a><a href="/#gallery">What bakers sell</a><a href="/#pricing">Pricing</a><a href="/#faq">Questions</a></div>
             <div><h4>For bakers</h4><Link to="/login">Sign in</Link><Link to="/login">Create an order link</Link>{DEMO && <Link to="/s/cocoa-crumb">Sample bakery</Link>}{DEMO && <Link to="/s/cocoa-crumb/custom">Sample custom request</Link>}</div>
-            <div><h4>Company</h4><Link to="/privacy">Privacy</Link><button type="button" className="linkbtn" onClick={openCookieSettings}>Cookie settings</button><a href="/#sources">Sources</a><span className="muted-f">Made in Pakistan</span></div>
+            <div><h4>Company</h4><Link to="/privacy">Privacy</Link><Link to="/terms">Terms</Link><button type="button" className="linkbtn" onClick={openCookieSettings}>Cookie settings</button><a href="/#sources">Sources</a><span className="muted-f">Made in Pakistan</span></div>
           </nav>
         </div>
         <div className="lp-foot-trust">
@@ -335,6 +337,14 @@ export default function Landing() {
   useReveal();
   const [heroIn, setHeroIn] = useState(true);
   useEffect(() => { document.body.classList.toggle("cta-on", !heroIn); return () => document.body.classList.remove("cta-on"); }, [heroIn]);
+  useEffect(() => {
+    setPageSEO({
+      title: "Dabba · Preorders for home bakers",
+      description: "Dabba gives home bakers one preorder link: menu with prices, daily limits, deposits and WhatsApp updates. Built for Pakistan.",
+      canonical: "https://dabba.vercel.app/",
+      ogImage: "https://dabba.vercel.app/img/tart.webp",
+    });
+  }, []);
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />

@@ -9,6 +9,7 @@ import Done from "./pages/Done.jsx";
 import Request from "./pages/Request.jsx";
 import Status from "./pages/Status.jsx";
 import Privacy from "./pages/Privacy.jsx";
+import Terms from "./pages/Terms.jsx";
 import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import { DEMO } from "./lib/api.js";
@@ -28,12 +29,13 @@ function App() {
   const { choice } = useConsent();
 
   if (choice?.analytics && typeof window !== "undefined") {
-    initGA4("G-XXXXXXXXXX");
+    const ga4Id = import.meta.env.VITE_GA4_ID;
+    if (ga4Id) initGA4(ga4Id);
   }
 
   return (
     <>
-      {DEMO && <div className="banner">Demo mode: everything you enter stays in this browser only.</div>}
+      {DEMO && pathname !== "/" && <div className="banner">Demo mode: everything you enter stays in this browser only.</div>}
       <div key={pathname} className={`page-wrap${pathname === "/" ? " home" : ""}`}>
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -42,6 +44,7 @@ function App() {
           <Route path="/s/:slug/custom" element={<Request />} />
           <Route path="/o/:code" element={<Status />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
           <Route path="/login" element={<Login />} />
           <Route path="/app" element={<Dashboard />} />
           <Route path="*" element={<NotFound />} />

@@ -63,4 +63,4 @@ Disallow: /o/
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://dabba.vercel.app/sitemap.xml
+Sitemap: https://daba.devs.surf/sitemap.xml

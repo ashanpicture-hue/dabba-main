@@ -179,15 +179,86 @@ revoke all on function public._norm_phone(text) from public, anon, authenticated
 revoke all on function public._day_check(public.shops, date, int, int) from public, anon, authenticated;
 revoke all on function public._fee(public.shops, jsonb) from public, anon, authenticated;
 
+/* ---------------- rate limiting ---------------- */
+
+-- Tracks request counts per client IP and function name.
+create table if not exists public.rate_limits (
+  id bigint generated always as identity primary key,
+  client_ip inet not null,
+  fn_name text not null,
+  window_start timestamptz not null default now(),
+  request_count int not null default 1,
+  unique (client_ip, fn_name, window_start)
+);
+create index if not exists rate_limits_lookup on public.rate_limits (client_ip, fn_name, window_start);
+
+-- Helper: get client IP from request headers (works behind Supabase edge).
+create or replace function public._client_ip()
+returns inet language plpgsql stable as $$
+begin
+  -- Try to get real IP from headers (Supabase sets these)
+  if current_setting('request.headers', true) is not null then
+    declare h jsonb := current_setting('request.headers')::jsonb;
+    begin
+      if h ? 'x-forwarded-for' then
+        return (h->>'x-forwarded-for')::inet;
+      end if;
+      if h ? 'x-real-ip' then
+        return (h->>'x-real-ip')::inet;
+      end if;
+    exception when others then null;
+    end;
+  end if;
+  -- Fallback to PostgreSQL's client address
+  return inet_client_addr();
+exception when others then
+  return '0.0.0.0'::inet;
+end $$;
+
+-- Checks and increments rate limit. Raises exception if exceeded.
+-- p_max_requests: max requests allowed in the window
+-- p_window_seconds: sliding window in seconds
+create or replace function public._check_rate_limit(p_fn_name text, p_max_requests int, p_window_seconds int)
+returns void language plpgsql as $$
+declare
+  v_ip inet := public._client_ip();
+  v_window_start timestamptz := date_trunc('second', now()) - (p_window_seconds || ' seconds')::interval;
+  v_count int;
+begin
+  -- Clean old entries (older than window)
+  delete from public.rate_limits
+   where window_start < v_window_start;
+
+  -- Upsert current window count
+  insert into public.rate_limits (client_ip, fn_name, window_start, request_count)
+  values (v_ip, p_fn_name, date_trunc('second', now()), 1)
+  on conflict (client_ip, fn_name, window_start) do update
+    set request_count = rate_limits.request_count + 1
+    where rate_limits.request_count < p_max_requests
+  returning request_count into v_count;
+
+  if v_count is null or v_count > p_max_requests then
+    raise exception 'Rate limit exceeded. Please wait a moment and try again.';
+  end if;
+end $$;
+
+revoke all on function public._client_ip() from public, anon, authenticated;
+revoke all on function public._check_rate_limit(text, int, int) from public, anon, authenticated;
+revoke all on table public.rate_limits from public, anon, authenticated;
+
 /* ---------------- customer functions ---------------- */
 
 create or replace function public.day_load(p_slug text)
-returns table(day date, units int) language sql stable security definer set search_path = public as $$
+returns table(day date, units int) language plpgsql security definer set search_path = public as $$
+begin
+  perform public._check_rate_limit('day_load', 30, 60);
+  return query
   select o.due_date, sum(o.units)::int
   from orders o join shops s on s.id = o.shop_id
   where s.slug = p_slug and o.status in ('new','confirmed','ready','delivered')
     and o.due_date >= (now() at time zone 'Asia/Karachi')::date
   group by o.due_date;
+end;
 $$;
 
 create or replace function public.place_order(p_slug text, p jsonb)
@@ -197,6 +268,7 @@ declare
   v_lines jsonb := '[]'; v_choices jsonb; v_sub int := 0; v_units int := 0; v_q int;
   v_price int; v_u int; v_label text; v_msg text; v_fee int; v_total int; v_phone text; v_row orders;
 begin
+  perform public._check_rate_limit('place_order', 5, 60);
   select * into s from shops where slug = p_slug and is_open;
   if not found then raise exception 'This shop isn''t taking orders right now.'; end if;
   v_phone := _norm_phone(p->>'customer_phone');
@@ -251,6 +323,7 @@ create or replace function public.request_custom(p_slug text, p jsonb)
 returns jsonb language plpgsql security definer set search_path = public as $$
 declare s shops; v_phone text; v_fee int; v_photos text[]; v_row orders;
 begin
+  perform public._check_rate_limit('request_custom', 3, 60);
   select * into s from shops where slug = p_slug and is_open and custom_enabled;
   if not found then raise exception 'This shop isn''t taking custom requests right now.'; end if;
   v_phone := _norm_phone(p->>'customer_phone');
@@ -280,6 +353,7 @@ create or replace function public.accept_quote(p_code text, p_proof text)
 returns jsonb language plpgsql security definer set search_path = public as $$
 declare o orders; s shops; v_row orders;
 begin
+  perform public._check_rate_limit('accept_quote', 5, 60);
   select * into o from orders where code = upper(p_code) and status = 'quoted' for update;
   if not found then raise exception 'This quote is no longer open.'; end if;
   if o.quote_expires is not null and o.quote_expires < now() then raise exception 'This quote has expired. Ask the baker for a new one.'; end if;
@@ -297,7 +371,10 @@ end $$;
 
 -- What a customer may see about their own order, looked up by its code.
 create or replace function public.order_status(p_code text)
-returns jsonb language sql stable security definer set search_path = public as $$
+returns jsonb language plpgsql security definer set search_path = public as $$
+begin
+  perform public._check_rate_limit('order_status', 30, 60);
+  return query
   select jsonb_build_object(
     'order', jsonb_build_object('code', o.code, 'status', o.status, 'payment_status', o.payment_status,
       'due_date', o.due_date, 'fulfilment', o.fulfilment, 'zone', o.zone, 'delivery_fee', o.delivery_fee,
@@ -308,6 +385,7 @@ returns jsonb language sql stable security definer set search_path = public as $
       'payment_info', s.payment_info, 'deposit_pct', s.deposit_pct, 'pickup_address', s.pickup_address, 'instagram', s.instagram))
   from orders o join shops s on s.id = o.shop_id
   where o.code = upper(p_code) and char_length(p_code) = 6;
+end;
 $$;
 
 revoke all on function public.place_order(text, jsonb) from public;

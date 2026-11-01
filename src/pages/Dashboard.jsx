@@ -8,6 +8,7 @@ import {
 } from "../lib/core.js";
 import { payChip, statusChip } from "../components/Parts.jsx";
 import Feedback from "../components/Feedback.jsx";
+import { setPageSEO } from "../lib/seo.js";
 
 const TABS = [["orders", "Orders"], ["prep", "Baking list"], ["menu", "Menu"], ["shop", "Shop settings"], ["cost", "Costing"]];
 
@@ -18,10 +19,12 @@ export default function Dashboard() {
   const [tab, setTab] = useState(() => { try { return localStorage.getItem("dabba-tab") || "orders"; } catch { return "orders"; } });
 
   useEffect(() => {
-    const meta = document.querySelector('meta[name="robots"]') || document.createElement('meta');
-    meta.name = 'robots';
-    meta.content = 'noindex, nofollow';
-    document.head.appendChild(meta);
+    setPageSEO({
+      title: "Dashboard · Dabba Baker Dashboard",
+      description: "Your Dabba baker dashboard. Live order alerts, daily baking list, menu editor, recipe costing, and shop settings.",
+      canonical: "https://dabba.vercel.app/app",
+      noIndex: true,
+    });
   }, []);
 
   useEffect(() => { api.session().then(setUser); return api.onAuth(setUser); }, []);

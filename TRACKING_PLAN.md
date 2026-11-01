@@ -52,7 +52,7 @@
 - User can change choice via "Keep my current choice" button in banner
 
 ## Implementation Notes
-- GA4 measurement ID: `G-XXXXXXXXXX` (replace in `src/main.jsx`)
+- GA4 measurement ID: set via `VITE_GA4_ID` environment variable (see `.env.example`)
 - Page views sent manually on route changes (SPA)
 - All events gated behind `choice.analytics`
 - Vercel Analytics also gated behind same consent

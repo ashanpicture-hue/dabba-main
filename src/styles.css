@@ -178,34 +178,83 @@ footer.site { border-top: 1px solid var(--line); margin-top: 48px; padding-block
   .cookie { left: 0; right: 0; bottom: 0; width: auto; border-radius: 16px 16px 0 0; border-inline: 0; border-bottom: 0; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
 }
 
-/* ---------- Order page: menu on the left, your order on the right ---------- */
+/* ---------- Order page: steps on the left, your order on the right ---------- */
 .shop-grid { display: block; padding-block: 28px 24px; }
-.shop-main { display: grid; gap: 24px; min-width: 0; }
+.shop-main { display: grid; gap: 28px; min-width: 0; }
+
+/* Steps. Grouping comes from a hairline and space, not nested boxes. */
+.step { display: grid; gap: 14px; align-content: start; padding-top: 28px; border-top: 1px solid var(--line); scroll-margin-top: 12px; }
+.step-head { display: flex; align-items: center; gap: 12px; }
+.step-head h2 { margin: 0; font-size: 1.35rem; }
+.step-n { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--sub); font: 600 13px var(--body); font-variant-numeric: tabular-nums;
+  transition: background-color .2s var(--md-ease-enter), color .2s var(--md-ease-enter), border-color .2s var(--md-ease-enter); }
+.step-n[data-done="true"] { background: var(--good-soft); border-color: transparent; color: var(--good); }
+.field-h { font-size: 14px; }
+.fields { display: grid; gap: 16px; animation: md-rise .25s var(--md-ease-enter); }
+.date-block { display: grid; gap: 8px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+/* Menu: one surface, rows separated by hairlines. The control sits beside the price. */
+.menu { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.menu-item { display: flex; align-items: flex-start; gap: 14px; padding: 14px; transition: background-color .2s var(--md-ease-enter); }
+.menu-item + .menu-item { border-top: 1px solid var(--line); }
+.menu-item[data-in="true"] { background: color-mix(in srgb, var(--accent-soft) 40%, var(--surface)); }
+.menu-thumb { width: 80px; height: 80px; flex: none; }
+.menu-body { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.menu-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; margin-top: 8px; }
+.menu-price { font-weight: 700; font-variant-numeric: tabular-nums; }
+.menu-act { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+.qty[data-zero="true"] span { color: var(--sub); font-weight: 500; }
+.in-order { font-size: 13px; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+.custom-link { text-decoration: none; color: inherit; border-style: dashed; }
+
+/* Your order: a slim bar on phones, a sticky panel on desktop. */
 .order-side { position: sticky; bottom: 0; z-index: 5; display: grid; gap: 12px; margin: 24px calc(-1 * max(16px, env(safe-area-inset-right))) 0 calc(-1 * max(16px, env(safe-area-inset-left)));
-  padding: 12px max(16px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); background: var(--surface); border-top: 1px solid var(--line); }
-.os-toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink); font: 600 15px var(--body); text-align: left; cursor: pointer; }
-.os-toggle .chev { color: var(--sub); transition: transform .2s var(--md-ease-enter); }
+  padding: 12px max(16px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); background: var(--surface); border-top: 1px solid var(--line);
+  box-shadow: 0 -10px 24px -14px rgba(42, 29, 26, .22); animation: md-rise .25s var(--md-ease-enter); }
+.order-side.is-empty { display: none; }
+.os-bar { display: flex; align-items: center; gap: 12px; }
+.os-toggle { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.os-toggle-text { display: grid; line-height: 1.25; min-width: 0; }
+.os-count { font-size: 13px; font-weight: 500; color: var(--sub); }
+.os-sum { font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.os-toggle .chev { flex: none; color: var(--sub); transition: transform .2s var(--md-ease-enter); }
 .order-side.open .os-toggle .chev { transform: rotate(180deg); }
-.os-body { display: none; gap: 16px; max-height: 50vh; overflow-y: auto; overscroll-behavior: contain; }
+.os-place { flex: 0 0 auto; min-height: 48px; padding-inline: 24px; white-space: nowrap; }
+.os-body { display: none; gap: 16px; max-height: 66dvh; overflow-y: auto; overscroll-behavior: contain; }
 .order-side.open .os-body { display: grid; animation: md-rise .25s var(--md-ease-enter); }
 .os-head { display: none; }
 .os-head h2 { font-size: 1.25rem; margin: 0; }
-.os-line .qty { justify-self: start; }
-.os-list { display: grid; }
+.os-list { display: grid; max-height: min(38dvh, 22rem); overflow-y: auto; overscroll-behavior: contain; }
 .os-line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; padding-block: 12px; border-top: 1px solid var(--line); }
 .os-line:first-child { border-top: 0; padding-top: 0; }
+.os-line .qty { justify-self: start; }
 .os-name { font-weight: 600; overflow-wrap: anywhere; }
-.os-unit { font-size: 13px; color: var(--sub); font-weight: 400; display: block; font-variant-numeric: tabular-nums; }
-.os-price { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.os-unit { display: block; font-size: 13px; font-weight: 400; color: var(--sub); font-variant-numeric: tabular-nums; }
+.os-price { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
 .os-remove { justify-self: end; padding: 0; border: 0; background: none; color: var(--sub); font: 500 13px var(--body); text-decoration: underline; cursor: pointer; }
 .os-remove:hover { color: var(--ink); }
-.os-totals { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
 .os-empty { margin: 0; color: var(--sub); font-size: 14px; }
-.in-order { font-size: 13px; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+.os-totals { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+.os-pending { color: var(--warn); font-weight: 600; }
+.total.due { padding: 10px 12px; border-radius: 10px; background: var(--sunk); font-weight: 700; }
+.os-next { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--sunk); color: var(--ink); font: 600 14px var(--body); text-align: left; cursor: pointer; transition: border-color .2s var(--md-ease-enter); }
+.os-next:hover { border-color: var(--sub); }
+.os-next svg { flex: none; color: var(--sub); }
+.os-ready { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 14px; font-weight: 600; color: var(--good); }
+
 @media (min-width: 960px) {
   .shop-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 40px; align-items: start; }
-  .order-side { position: sticky; top: 24px; bottom: auto; margin: 0; padding: 20px; gap: 16px; border: 1px solid var(--line); border-radius: var(--r); max-height: calc(100dvh - 48px); overflow-y: auto; }
+  .menu-thumb { width: 96px; height: 96px; }
+  .order-side { position: sticky; top: 24px; bottom: auto; margin: 0; padding: 20px; gap: 16px; border: 1px solid var(--line); border-radius: var(--r); box-shadow: none; animation: none; max-height: calc(100dvh - 48px); overflow-y: auto; }
+  .order-side.is-empty { display: grid; }
   .os-toggle { display: none; }
+  .os-place { flex: 1; }
   .os-head { display: flex; }
-  .os-body { display: grid; max-height: none; overflow: visible; animation: none; }
+  .order-side .os-body, .order-side.open .os-body { display: grid; max-height: none; overflow: visible; animation: none; }
+  .os-list { max-height: min(44dvh, 28rem); }
 }
+
+/* Browser surfaces take the palette too. */
+::selection { background: var(--accent-soft); color: var(--ink); }
+input, textarea, select { caret-color: var(--accent); }

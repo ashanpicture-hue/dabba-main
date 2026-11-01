@@ -5,8 +5,8 @@ export const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Dabba",
-  "url": "https://dabba.vercel.app",
-  "logo": "https://dabba.vercel.app/favicon.svg",
+  "url": "https://daba.devs.surf",
+  "logo": "https://daba.devs.surf/favicon.svg",
   "description": "Preorder links for home bakers in Pakistan. One order link: menu with prices, daily limits, deposits, and WhatsApp updates.",
   "founder": {
     "@type": "Person",
@@ -31,8 +31,8 @@ export const localBusinessSchema = (shop) => ({
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": shop.name,
-  "image": shop.image_url || "https://dabba.vercel.app/favicon.svg",
-  "url": `https://dabba.vercel.app/s/${shop.slug}`,
+  "image": shop.image_url || "https://daba.devs.surf/favicon.svg",
+  "url": `https://daba.devs.surf/s/${shop.slug}`,
   "telephone": shop.whatsapp,
   "address": {
     "@type": "PostalAddress",
@@ -116,13 +116,8 @@ export const webSiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "Dabba",
-  "url": "https://dabba.vercel.app",
-  "description": "Preorder links for home bakers in Pakistan. One order link: menu with prices, daily limits, deposits, and WhatsApp updates.",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://dabba.vercel.app/search?q={search_term}",
-    "query-input": "required name=search_term"
-  }
+  "url": "https://daba.devs.surf",
+  "description": "Preorder links for home bakers in Pakistan. One order link: menu with prices, daily limits, deposits, and WhatsApp updates."
 };
 
 export const breadcrumbListSchema = (items) => ({
