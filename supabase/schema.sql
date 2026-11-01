@@ -371,7 +371,7 @@ end $$;
 
 -- What a customer may see about their own order, looked up by its code.
 create or replace function public.order_status(p_code text)
-returns jsonb language plpgsql security definer set search_path = public as $$
+returns setof jsonb language plpgsql security definer set search_path = public as $$
 begin
   perform public._check_rate_limit('order_status', 30, 60);
   return query
