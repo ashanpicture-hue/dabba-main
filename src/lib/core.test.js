@@ -108,3 +108,59 @@ test("prep list and costing", () => {
   assert.equal(c.perPiece, 500);
   assert.equal(c.profit, 1500);
 });
+
+import { parseAddress, assessAddress, lookupQuery, matchGeocode, combineAddress } from "./core.js";
+
+test("address parsing", () => {
+  const a = parseAddress("House 12, Street 4, Phase 6, DHA");
+  assert.equal(a.house, "12"); assert.equal(a.street, true); assert.match(a.block, /Phase 6/i);
+  assert.equal(parseAddress("Plot 45-B, Block 7, Gulshan-e-Iqbal").house, "45-B");
+  assert.equal(parseAddress("H# 9, Khayaban-e-Shamsheer").house, "9");
+  assert.equal(parseAddress("Flat 3, Sea View Apartments, Clifton Block 2").house, "3");
+  assert.equal(parseAddress("A-45, Block 2, Gulshan").house, "A-45");
+  assert.equal(parseAddress("12/B Street 3 Nazimabad").house, "12/B");
+  assert.match(parseAddress("House 5, F-7/2, Islamabad").block, /F-7\/2/i);
+  assert.equal(parseAddress("Near Dolmen Mall, Clifton").landmark, true);
+  assert.equal(parseAddress("Near Dolmen Mall, Clifton").house, null);
+});
+
+test("address assessment: junk blocks, gaps only nudge", () => {
+  assert.equal(assessAddress("").blocking, true);
+  assert.equal(assessAddress("asdf asdf").blocking, true);
+  assert.equal(assessAddress("xxxxxxxxx").blocking, true);
+  assert.equal(assessAddress("12345678").blocking, true);
+  assert.equal(assessAddress("House 12, Street 4, Phase 6, DHA").level, "ok");
+  const noHouse = assessAddress("Clifton Block 5 near Dolmen");
+  assert.equal(noHouse.blocking, false); assert.equal(noHouse.level, "warn"); assert.match(noHouse.issues[0], /house/i);
+  assert.equal(assessAddress("اوکھائی کا گھر نمبر ۱۲ کلفٹن").blocking, false); // Urdu is not junk
+});
+
+test("validateCustomer rejects junk delivery addresses only", () => {
+  const base = { customer_name: "Ali", customer_phone: "03001234567", fulfilment: "delivery" };
+  assert.match(validateCustomer({ ...base, address: "asdf asdf asdf" }), /doesn't look like an address/);
+  assert.equal(validateCustomer({ ...base, address: "Near Dolmen Mall, Clifton" }), null);
+  assert.equal(validateCustomer({ ...base, fulfilment: "pickup", address: "asdf asdf asdf" }), null);
+});
+
+test("lookup query drops the house number", () => {
+  assert.equal(lookupQuery("House 12, Street 4, Phase 6, DHA"), "Street 4, Phase 6, DHA");
+  assert.equal(lookupQuery("12/B, Block 5, Clifton"), "Block 5, Clifton");
+});
+
+const hit = (over = {}) => ({ lat: "24.8", lon: "67.0", display_name: "Block 5, Clifton, Karachi, Sindh, Pakistan", address: { road: "Block 5", suburb: "Clifton", city: "Karachi" }, ...over });
+
+test("geocoder matches and messages", () => {
+  assert.deepEqual(matchGeocode([], { city: "Karachi" }), { found: false });
+  const m = matchGeocode([hit()], { city: "Karachi", house: "12" });
+  assert.equal(m.precision, "street"); assert.equal(m.place, "Clifton, Karachi"); assert.equal(m.cityMismatch, false);
+  assert.equal(matchGeocode([hit({ address: { house_number: "12", road: "x", suburb: "Clifton", city: "Karachi" } })], { city: "Karachi", house: "12" }).precision, "exact");
+  const lahore = matchGeocode([hit({ display_name: "Gulberg, Lahore, Punjab, Pakistan", address: { suburb: "Gulberg", city: "Lahore" } })], { city: "Karachi" });
+  assert.equal(lahore.cityMismatch, true);
+  const good = assessAddress("House 12, Street 4, Phase 6, DHA");
+  assert.equal(combineAddress(good, m, { city: "Karachi" }).status, "ok");
+  assert.equal(combineAddress(good, lahore, { city: "Karachi" }).status, "warn");
+  assert.equal(combineAddress(good, { found: false }).status, "warn");
+  assert.equal(combineAddress(good, null).status, "unverified");
+  assert.equal(combineAddress(assessAddress("asdf asdf"), m).status, "error");
+  assert.equal(combineAddress(assessAddress("Block 5 Clifton"), m).status, "warn"); // no house number
+});

@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { Alert, AlertDescription } from "../components/ui/alert.jsx";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../lib/api.js";
 import { fmtDate, fmtDateTime, rs, waLink, timeline, lineLabel, quoteExpired, PAY } from "../lib/core.js";
@@ -28,7 +29,7 @@ export default function Status() {
     <div className="wrap narrow" style={{ paddingBlock: 64 }}>
       <h1>Order not found</h1>
       <p className="muted">Check the 6-letter code in your WhatsApp message and try the link again.</p>
-      {error && <div className="err">{error}</div>}
+      {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
     </div>
   );
 
@@ -55,7 +56,7 @@ export default function Status() {
       <p className="muted" style={{ margin: 0 }}>Hi {o.customer_name}. For {o.fulfilment === "delivery" ? `delivery to ${o.zone}` : "pickup"} on <b>{fmtDate(o.due_date, { weekday: "long", day: "numeric", month: "long" })}</b>.</p>
 
       {ended ? (
-        <div className="err">{o.status === "declined" ? `${shop.name} can't take this request. Message them on WhatsApp to try another date.` : "This order was cancelled."}</div>
+        <Alert variant="destructive"><AlertDescription>{o.status === "declined" ? `${shop.name} can't take this request. Message them on WhatsApp to try another date.` : "This order was cancelled."}</AlertDescription></Alert>
       ) : (
         <ol className="card stack" style={{ listStyle: "none", margin: 0, gap: 10 }} aria-label="Order progress">
           {steps.map((s) => (
@@ -85,12 +86,12 @@ export default function Status() {
           {o.delivery_fee > 0 && <div className="total"><span>Delivery</span><span>{rs(o.delivery_fee)}</span></div>}
           <div className="total big"><span>Total</span><span>{rs(o.total)}</span></div>
           {expired ? (
-            <div className="err">This price expired on {fmtDateTime(o.quote_expires)}. Message {shop.name} for a new one.</div>
+            <Alert variant="destructive"><AlertDescription>This price expired on {fmtDateTime(o.quote_expires)}. Message {shop.name} for a new one.</AlertDescription></Alert>
           ) : (
             <>
               {o.quote_expires && <p className="small muted" style={{ margin: 0 }}>Price holds until {fmtDateTime(o.quote_expires)}. Your date is booked once you pay.</p>}
               {o.deposit_due > 0 && <PayBox shop={shop} amount={o.deposit_due} proof={proof} setProof={setProof} setError={setError} setProcessing={setProcessing} />}
-              {error && <div className="err" role="alert">{error}</div>}
+              {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
               <button className="btn primary block" onClick={accept} disabled={busy || processing}>{processing ? "Adding screenshot…" : busy ? "Booking…" :o.deposit_due > 0 ? `Accept and book · paid ${rs(o.deposit_due)}` : "Accept and book"}</button>
             </>
           )}

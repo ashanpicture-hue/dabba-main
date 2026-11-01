@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { shrinkImage } from "../lib/api.js";
 import { rs, fmtDate, STATUS, PAY } from "../lib/core.js";
+import AddressField from "./AddressField.jsx";
 
 /** Pickup or delivery, area, name, phone, address. Shared by the order and custom request forms. */
 export function CustomerFields({ shop, f, setF, notes = true, fulfilment = true }) {
@@ -24,7 +25,7 @@ export function CustomerFields({ shop, f, setF, notes = true, fulfilment = true 
       )}
       <label htmlFor="name">Name<input id="name" value={f.customer_name} onChange={set("customer_name")} autoComplete="name" required /></label>
       <label htmlFor="phone">WhatsApp number<input id="phone" value={f.customer_phone} onChange={set("customer_phone")} inputMode="tel" autoComplete="tel" placeholder="0300 1234567" required /></label>
-      {fulfilment && f.fulfilment === "delivery" && <label htmlFor="addr">Full address<textarea id="addr" value={f.address} onChange={set("address")} autoComplete="street-address" placeholder="House, street, block, area" /></label>}
+      {fulfilment && f.fulfilment === "delivery" && <AddressField id="addr" value={f.address} onChange={(v) => setF((x) => ({ ...x, address: v }))} shop={shop} />}
       {notes && <label htmlFor="notes">Note for the baker<input id="notes" value={f.notes} onChange={set("notes")} placeholder="Optional: allergies, timing" /></label>}
     </>
   );

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Alert, AlertDescription } from "./ui/alert.jsx";
 import { api } from "../lib/api.js";
 
 /** Floating feedback button. Every page carries one, so real users can tell us what to change. */
@@ -42,7 +43,7 @@ export default function Feedback({ role = "visitor", shopId = null, label = "Fee
                 </div>
                 <label htmlFor="fb-msg">Your note<textarea id="fb-msg" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="What was hard, missing or confusing?" /></label>
                 <label htmlFor="fb-contact">WhatsApp or email, if you want a reply<input id="fb-contact" value={contact} onChange={(e) => setContact(e.target.value)} placeholder="Optional" /></label>
-                {error && <div className="err">{error}</div>}
+                {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
                 <div className="row">
                   <button className="btn primary" disabled={state === "sending"}>{state === "sending" ? "Sending…" : "Send"}</button>
                   <button type="button" className="btn ghost" onClick={() => setOpen(false)}>Cancel</button>

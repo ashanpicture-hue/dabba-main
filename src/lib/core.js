@@ -155,6 +155,73 @@ export function deliveryFee(shop, draft) {
 
 export const deposit = (shop, total) => Math.ceil((total * (shop.deposit_pct ?? 100)) / 100);
 
+/* ---------- addresses ---------- */
+// Pakistani addresses are rarely on maps down to the house, so this is two layers:
+// 1. parseAddress / assessAddress: local rules, instant, used by the UI and by validateCustomer.
+// 2. matchGeocode / combineAddress: judge what a map lookup (lib/geocode.js) found. Advisory only.
+
+const HOUSE_WORD = /\b(?:house|h|hno|plot|flat|apt|apartment|villa|bungalow|bunglow|shop|office|unit)\b\.?\s*(?:no\b\.?|number|#|:)?\s*([a-z]{0,2}-?\d+[a-z]?(?:[-/][a-z0-9]{1,3})*)/i;
+const HOUSE_LEAD = /^\s*#?\s*([a-z]{0,2}-?\d+[a-z]?(?:[-/][a-z0-9]{1,3})*)\b/i;
+const STREET = /\b(?:street|st|lane|road|rd|avenue|ave|gali|boulevard|blvd|marg|khayaban(?:-e-[a-z]+)?|shahrah(?:-e-[a-z]+)?)\b\.?/i;
+const BLOCK = /\b(?:block|blk|phase|sector|sec|stage|scheme|society|colony|town|mohalla|extension|ext)\b\.?\s*[-#]?\s*[a-z0-9]{0,4}/i;
+const SECTOR_PK = /\b[a-i]-\d{1,2}(?:\/\d)?\b/i; // Islamabad: F-7/2
+const LANDMARK = /\b(?:near|opposite|opp|behind|beside|next to|adjacent)\b/i;
+const JUNK = /^(?:test|testing|abc|abcd|asdf|qwerty|xxx+|none|na|nil|null|address|home|house|here|there)$/i;
+
+export function parseAddress(raw) {
+  const text = String(raw || "").replace(/\s+/g, " ").trim();
+  const house = (text.match(HOUSE_WORD) || text.match(HOUSE_LEAD) || [])[1] || null;
+  const block = (text.match(BLOCK) || text.match(SECTOR_PK) || [])[0] || null;
+  return { text, house, street: STREET.test(text), block: block ? block.trim() : null, landmark: LANDMARK.test(text) };
+}
+
+/** Local checks only. `blocking` means the order shouldn't go through; everything else is a nudge. */
+export function assessAddress(raw) {
+  const parts = parseAddress(raw);
+  const t = parts.text;
+  if (!t) return { level: "error", blocking: true, issues: ["Add your full delivery address."], parts };
+  const letters = (t.match(/[a-z\u0600-\u06ff]/gi) || []).length;
+  const words = t.toLowerCase().split(/[\s,]+/).filter(Boolean);
+  if (letters < 4 || /(.)\1{4,}/.test(t) || words.every((w) => JUNK.test(w))) {
+    return { level: "error", blocking: true, issues: ["That doesn't look like an address. Add the house number, street and area."], parts };
+  }
+  const issues = [];
+  if (!parts.house) issues.push("Add a house, plot or flat number so the rider can find you.");
+  if (!parts.street && !parts.block) issues.push("Add the street, block or phase.");
+  return { level: issues.length ? "warn" : "ok", blocking: false, issues, parts };
+}
+
+/** The same address without the house number, which map data usually lacks. */
+export const lookupQuery = (raw) => String(raw || "").replace(HOUSE_WORD, "").replace(new RegExp(HOUSE_LEAD.source + "[,\\s]*", "i"), "").replace(/\s*,\s*,+/g, ",").replace(/\s+/g, " ").replace(/^[,\s]+|[,\s]+$/g, "");
+
+const norm = (v) => String(v || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
+/** Pick the best geocoder hit (Nominatim shape) and say how precise it is. */
+export function matchGeocode(results, { city = "", house = null } = {}) {
+  const list = Array.isArray(results) ? results : [];
+  if (!list.length) return { found: false };
+  const c = norm(city);
+  const inCity = c ? list.find((r) => norm(r.display_name).includes(c)) : list[0];
+  const hit = inCity || list[0];
+  const a = hit.address || {};
+  const area = a.neighbourhood || a.suburb || a.city_district || a.quarter || "";
+  const town = a.city || a.town || a.village || a.state_district || "";
+  const place = [...new Set([area, town].filter(Boolean))].join(", ") || String(hit.display_name || "").split(",").slice(0, 2).join(",").trim();
+  const precision = a.house_number && house && norm(a.house_number) === norm(house) ? "exact" : a.road ? "street" : "area";
+  return { found: true, precision, place, cityMismatch: !!c && !inCity, lat: Number(hit.lat), lon: Number(hit.lon) };
+}
+
+/** Turn local checks plus an optional map result into one message for the person typing. match === null means the lookup failed. */
+export function combineAddress(local, match, { city = "" } = {}) {
+  if (local.blocking) return { status: "error", title: "Address needs more detail", lines: local.issues };
+  if (match === null) return { status: "unverified", title: "Couldn't check this on the map", lines: [...local.issues, "You can still place the order. Make sure it reads right."] };
+  if (!match?.found) return { status: "warn", title: "Not found on the map", lines: [...local.issues, "Many Pakistani addresses aren't mapped in detail. If it reads right, you can continue."] };
+  if (match.cityMismatch) return { status: "warn", title: `This looks outside ${city || "the shop's city"}`, lines: [`The closest match is ${match.place}. Check the area and city.`, ...local.issues] };
+  const sure = match.precision === "exact" ? `Found ${match.place}.` : `Found ${match.place}. We can't confirm the house number, so check it reads right.`;
+  if (local.issues.length) return { status: "warn", title: "Almost there", lines: [sure, ...local.issues] };
+  return { status: "ok", title: match.precision === "exact" ? "Address looks right" : "Area matches", lines: [sure] };
+}
+
 /* ---------- custom cake requests and quotes ---------- */
 
 export const OCCASIONS = ["Birthday", "Anniversary", "Eid", "Wedding or event", "Baby shower", "Other"];
@@ -162,7 +229,11 @@ export const OCCASIONS = ["Birthday", "Anniversary", "Eid", "Wedding or event", 
 export function validateCustomer(c) {
   if (!String(c.customer_name || "").trim()) return "Enter your name.";
   if (!normalizePhone(c.customer_phone)) return "Enter a Pakistani mobile number, like 0300 1234567.";
-  if (c.fulfilment === "delivery" && String(c.address || "").trim().length < 8) return "Enter the full delivery address.";
+  if (c.fulfilment === "delivery") {
+    if (String(c.address || "").trim().length < 8) return "Enter the full delivery address.";
+    const a = assessAddress(c.address);
+    if (a.blocking) return a.issues[0];
+  }
   return null;
 }
 

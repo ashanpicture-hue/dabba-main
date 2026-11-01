@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Alert, AlertDescription } from "../components/ui/alert.jsx";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { api, shrinkImage } from "../lib/api.js";
 import { availableDates, validateRequest, OCCASIONS, todayPK } from "../lib/core.js";
@@ -111,7 +112,7 @@ export default function Request() {
         <CustomerFields shop={shop} f={f} setF={setF} notes={false} />
       </section>
 
-      {error && <div className="err" role="alert">{error}</div>}
+      {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
       <button className="btn primary block" disabled={busy || processing}>{processing ? "Adding photo…" : busy ? "Sending…" : "Send request"}</button>
       <p className="small muted" style={{ margin: 0 }}>No payment now. You'll pay the advance only if you accept the price.</p>
     </form>

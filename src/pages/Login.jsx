@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Alert, AlertDescription } from "../components/ui/alert.jsx";
 import { useNavigate, Link } from "react-router-dom";
 import { api, DEMO } from "../lib/api.js";
 
@@ -35,12 +36,12 @@ export default function Login() {
             <button className="btn primary" onClick={go} disabled={busy}>Open the demo dashboard</button>
           </>
         ) : sent ? (
-          <div className="ok">Check {email} for a sign-in link. Open it on this device.</div>
+          <Alert variant="success"><AlertDescription>Check {email} for a sign-in link. Open it on this device.</AlertDescription></Alert>
         ) : (
           <form className="stack" onSubmit={go}>
             <p className="muted">We'll email you a one-time sign-in link. No password needed.</p>
             <label htmlFor="email">Email<input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" /></label>
-            {error && <div className="err">{error}</div>}
+            {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
             <button className="btn primary" disabled={busy}>{busy ? "Sending…" : "Email me a sign-in link"}</button>
           </form>
         )}

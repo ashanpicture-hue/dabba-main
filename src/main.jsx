@@ -12,6 +12,9 @@ import Privacy from "./pages/Privacy.jsx";
 import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import { DEMO } from "./lib/api.js";
+import CookieBanner from "./components/CookieBanner.jsx";
+import { useConsent } from "./lib/consent.js";
+import { initGA4 } from "./lib/analytics.js";
 
 const NotFound = () => (
   <div className="wrap narrow" style={{ paddingBlock: 64 }}>
@@ -22,6 +25,12 @@ const NotFound = () => (
 
 function App() {
   const { pathname } = useLocation();
+  const { choice } = useConsent();
+
+  if (choice?.analytics && typeof window !== "undefined") {
+    initGA4("G-XXXXXXXXXX");
+  }
+
   return (
     <>
       {DEMO && <div className="banner">Demo mode: everything you enter stays in this browser only.</div>}
@@ -38,7 +47,8 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
-      <Analytics />
+      {choice?.analytics && <Analytics />}
+      <CookieBanner />
     </>
   );
 }

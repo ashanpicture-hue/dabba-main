@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { Alert, AlertDescription } from "../components/ui/alert.jsx";
 import { useNavigate, Link } from "react-router-dom";
 import { api, DEMO, shrinkImage } from "../lib/api.js";
 import {
@@ -178,7 +179,7 @@ function Setup({ onDone }) {
         <label htmlFor="s-slug">Order link<input id="s-slug" required value={f.slug} onChange={set("slug")} /><span className="small muted">{location.origin}/s/{slugify(f.slug) || "your-bakery"}</span></label>
         <label htmlFor="s-wa">WhatsApp number for orders<input id="s-wa" required value={f.whatsapp} onChange={set("whatsapp")} inputMode="tel" placeholder="0300 1234567" /></label>
         <label htmlFor="s-ig">Instagram handle<input id="s-ig" value={f.instagram} onChange={set("instagram")} placeholder="Optional" /></label>
-        {error && <div className="err">{error}</div>}
+        {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
         <button className="btn primary" disabled={busy}>Create my order link</button>
       </form>
     </div>
@@ -255,7 +256,7 @@ function QuoteForm({ o, shop, onDone, onCancel }) {
         <select id={`qh-${o.id}`} value={hours} onChange={(e) => setHours(e.target.value)}><option value={24}>24 hours</option><option value={48}>48 hours</option><option value={72}>3 days</option></select>
       </label>
       {fig.total > 0 && <div className="small">Customer pays {rs(fig.total)}{o.delivery_fee ? ` including ${rs(o.delivery_fee)} delivery` : ""}. Advance {rs(fig.deposit_due)}.</div>}
-      {error && <div className="err">{error}</div>}
+      {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
       <div className="row"><button className="btn primary sm">Send price on WhatsApp</button>{onCancel && <button type="button" className="btn sm ghost" onClick={onCancel}>Cancel</button>}</div>
     </form>
   );
@@ -459,7 +460,7 @@ function ItemForm({ shop, item, onClose, onSaved }) {
       <OptionsEditor options={f.options} setOptions={(options) => setF((x) => ({ ...x, options }))} />
       <label className="check"><input type="checkbox" checked={!!f.allow_message} onChange={set("allow_message")} />Let customers add a message on the cake</label>
       <label className="check"><input type="checkbox" checked={!!f.active} onChange={set("active")} />Show on order page</label>
-      {error && <div className="err">{error}</div>}
+      {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
       <div className="row">
         <button className="btn primary" disabled={uploading}>Save</button>
         <button type="button" className="btn ghost" onClick={onClose}>Cancel</button>
@@ -561,7 +562,7 @@ function Settings({ shop, onSaved }) {
         ))}
         <button type="button" className="btn sm" style={{ justifySelf: "start" }} onClick={() => setF((x) => ({ ...x, zones: [...x.zones, { name: "", fee: "" }] }))}>Add delivery area</button>
       </div>
-      {error && <div className="err">{error}</div>}{msg && <div className="ok">{msg}</div>}
+      {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}{msg && <Alert variant="success"><AlertDescription>{msg}</AlertDescription></Alert>}
       <button className="btn primary" style={{ justifySelf: "start" }}>Save settings</button>
     </form>
   );

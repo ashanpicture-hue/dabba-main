@@ -262,3 +262,7 @@ body.cta-on .fab { transform: translateY(-72px); }
 .lp-slots i { flex: 1; height: 8px; border-radius: 4px; background: #efe5df; transition: background-color .25s var(--md-ease-enter); }
 .lp-scene.on .lp-slots i.on { background: #7a1f3d; }
 .lp-toast svg { vertical-align: -2px; margin-right: 6px; }
+
+/* Footer button that looks like its sibling links */
+.lp-foot-cols .linkbtn { padding: 0; border: 0; background: none; font: inherit; color: #f3dbe3; text-align: left; cursor: pointer; }
+.lp-foot-cols .linkbtn:hover { color: #fff; text-decoration: underline; }

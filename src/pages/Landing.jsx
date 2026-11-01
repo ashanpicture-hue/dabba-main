@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { DEMO } from "../lib/api.js";
 import { organizationSchema, faqPageSchema, webSiteSchema } from "../lib/schema.js";
+import { trackEvent } from "../lib/analytics.js";
 import Feedback from "../components/Feedback.jsx";
 import "../landing.css";
 
@@ -123,8 +124,8 @@ function Banner({ onView }) {
             <h1>From <em>“price?”</em> to paid order, without a single DM.</h1>
             <p className="lead">Dabba gives your bakery one order link. Customers see your menu, pick an open date, pay the advance and upload proof. You get an alert, a baking list and one-tap WhatsApp replies.</p>
             <div className="row" style={{ gap: 12 }}>
-              <Link to="/login" className="lp-btn solid">Create your free order link</Link>
-              {DEMO ? <Link to="/s/cocoa-crumb" className="lp-btn line">Try the sample bakery</Link> : <a href="#how" className="lp-btn line">See how it works</a>}
+              <Link to="/login" className="lp-btn solid" onClick={() => trackEvent("cta_clicked", { button_text: "Create your free order link", location: "hero" })}>Create your free order link</Link>
+              {DEMO ? <Link to="/s/cocoa-crumb" className="lp-btn line" onClick={() => trackEvent("cta_clicked", { button_text: "Try the sample bakery", location: "hero" })}>Try the sample bakery</Link> : <a href="#how" className="lp-btn line" onClick={() => trackEvent("cta_clicked", { button_text: "See how it works", location: "hero" })}>See how it works</a>}
             </div>
             <div className="lp-pay"><span>Raast, bank, Easypaisa, JazzCash</span><span>WhatsApp built in</span><span>No app for customers</span></div>
           </div>
@@ -285,7 +286,7 @@ function SiteFooter() {
           <nav className="lp-foot-cols" aria-label="Footer">
             <div><h4>Product</h4><a href="/#features">Features</a><a href="/#gallery">What bakers sell</a><a href="/#pricing">Pricing</a><a href="/#faq">Questions</a></div>
             <div><h4>For bakers</h4><Link to="/login">Sign in</Link><Link to="/login">Create an order link</Link>{DEMO && <Link to="/s/cocoa-crumb">Sample bakery</Link>}{DEMO && <Link to="/s/cocoa-crumb/custom">Sample custom request</Link>}</div>
-            <div><h4>Company</h4><Link to="/privacy">Privacy</Link><a href="/#sources">Sources</a><span className="muted-f">Made in Pakistan</span></div>
+            <div><h4>Company</h4><Link to="/privacy">Privacy</Link><button type="button" className="linkbtn" onClick={openCookieSettings}>Cookie settings</button><a href="/#sources">Sources</a><span className="muted-f">Made in Pakistan</span></div>
           </nav>
         </div>
         <div className="lp-foot-trust">
