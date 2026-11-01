@@ -63,4 +63,4 @@ Disallow: /o/
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://daba.devs.surf/sitemap.xml
+Sitemap: https://dabba.devs.surf/sitemap.xml

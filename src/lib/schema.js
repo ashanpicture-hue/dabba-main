@@ -5,8 +5,8 @@ export const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Dabba",
-  "url": "https://daba.devs.surf",
-  "logo": "https://daba.devs.surf/favicon.svg",
+  "url": "https://dabba.devs.surf",
+  "logo": "https://dabba.devs.surf/favicon.svg",
   "description": "Preorder links for home bakers in Pakistan. One order link: menu with prices, daily limits, deposits, and WhatsApp updates.",
   "founder": {
     "@type": "Person",
@@ -31,8 +31,8 @@ export const localBusinessSchema = (shop) => ({
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": shop.name,
-  "image": shop.image_url || "https://daba.devs.surf/favicon.svg",
-  "url": `https://daba.devs.surf/s/${shop.slug}`,
+  "image": shop.image_url || "https://dabba.devs.surf/favicon.svg",
+  "url": `https://dabba.devs.surf/s/${shop.slug}`,
   "telephone": shop.whatsapp,
   "address": {
     "@type": "PostalAddress",
@@ -116,7 +116,7 @@ export const webSiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "Dabba",
-  "url": "https://daba.devs.surf",
+  "url": "https://dabba.devs.surf",
   "description": "Preorder links for home bakers in Pakistan. One order link: menu with prices, daily limits, deposits, and WhatsApp updates."
 };
 

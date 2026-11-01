@@ -1,5 +1,5 @@
 // SEO utilities for dynamic meta tags and canonical URLs
-const BASE_URL = "https://daba.devs.surf";
+const BASE_URL = "https://dabba.devs.surf";
 
 export function setPageSEO({ title, description, canonical, ogType = "website", ogImage, noIndex = false }) {
   // Canonical
