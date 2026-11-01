@@ -28,7 +28,9 @@ function App() {
   const { pathname } = useLocation();
   const { choice } = useConsent();
 
-  if (choice?.analytics && typeof window !== "undefined") {
+  // Initialize GA4 immediately (loads gtag.js) so Google's verification crawler detects it.
+  // Events (page_view, etc.) are still gated behind consent in trackPage/trackEvent.
+  if (typeof window !== "undefined") {
     const ga4Id = import.meta.env.VITE_GA4_ID;
     if (ga4Id) initGA4(ga4Id);
   }

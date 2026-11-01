@@ -1,13 +1,20 @@
 // GA4 analytics wrapper with consent gating.
-// Nothing is sent until the user accepts analytics in the cookie banner.
+// gtag.js loads immediately so Google's verification crawler detects it.
+// Events (page_view, etc.) are only sent after user consents via cookie banner.
 // All event names use object-action format (lowercase, underscores).
 
 let measurementId = null;
 
+function hasAnalyticsConsent() {
+  const consent = localStorage.getItem('dabba-consent-v1');
+  if (!consent) return false;
+  try { return JSON.parse(consent).analytics === true; } catch { return false; }
+}
+
 export function initGA4(id) {
   measurementId = id;
 
-  // Load gtag.js script
+  // Load gtag.js script IMMEDIATELY (for verification)
   const script = document.createElement("script");
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
@@ -33,6 +40,7 @@ function gtag() {
 /** Send a page view. Call on route changes. */
 export function trackPage(path, title) {
   if (!measurementId) return;
+  if (!hasAnalyticsConsent()) return;
   gtag("event", "page_view", {
     page_location: window.location.href,
     page_path: path,
@@ -43,12 +51,14 @@ export function trackPage(path, title) {
 /** Track a custom event with object-action naming. */
 export function trackEvent(action, properties = {}) {
   if (!measurementId) return;
+  if (!hasAnalyticsConsent()) return;
   gtag("event", action, properties);
 }
 
 /** Track a conversion event. */
 export function trackConversion(action, properties = {}) {
   if (!measurementId) return;
+  if (!hasAnalyticsConsent()) return;
   gtag("event", action, { ...properties });
 }
 
