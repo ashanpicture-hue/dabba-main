@@ -141,9 +141,6 @@
 .lp-compare .y { color: var(--good); font-weight: 600; } .lp-compare .n { color: var(--sub); }
 .lp-compare th.us, .lp-compare td.us { background: var(--accent-soft); }
 .lp-price { display: grid; grid-template-columns: 1.2fr .8fr; gap: 24px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 32px; }
-.lp-final { background: #1a1014; color: #fbeff3; border-radius: 20px; padding: 48px 32px; text-align: center; }
-.lp-final h2 { color: #fbeff3; }
-.lp-final p { color: #d9b9c4; }
 /* FAQ open/close — subtle transition */
 .lp-sec.alt details {
   transition: border-color .2s var(--md-ease-enter), box-shadow .2s var(--md-ease-enter);
