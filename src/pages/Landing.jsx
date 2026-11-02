@@ -309,11 +309,17 @@ function SiteFooter() {
             </div>
           )}
         </nav>
+        <div className="dft-sources" id="sources">
+          <h4>Sources</h4>
+          <ul>{SOURCES.map(([n, u]) => <li key={u}><a href={u} target="_blank" rel="noreferrer">{n}</a></li>)}</ul>
+          <p>Some sources are written by companies that sell bakery software.</p>
+        </div>
         <div className="dft-bottom">
           <Link to="/" className="dft-mark" aria-label="Dabba home">Dabba</Link>
           <div className="dft-meta">
             <p>Payments go straight to the baker. Dabba never holds money. Cake photos on this page are AI-generated illustrations.</p>
             <p>© 2026 Dabba · Made in Pakistan · In early testing</p>
+                        <p>Last updated: 1 November 2026</p>
           </div>
         </div>
       </div>
@@ -468,11 +474,6 @@ export default function Landing() {
         </div>
       </section>
 
-      <section id="sources" className="wrap" style={{ paddingBottom: 40 }}>
-        <div className="lp-sources"><b>Sources:</b>{SOURCES.map(([n, u]) => <a key={u} href={u} target="_blank" rel="noreferrer">{n}</a>)}</div>
-        <p className="small muted" style={{ marginTop: 8 }}>Some sources are written by companies that sell bakery software.</p>
-        <p className="small muted" style={{ marginTop: 8 }}>Last updated: 1 November 2026.</p>
-      </section>
       <SiteFooter />
       <StickyCta show={!heroIn} />
       <Feedback role="visitor" prompt="Would this help your bakery? What's missing?" />
