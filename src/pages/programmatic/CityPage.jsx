@@ -137,6 +137,15 @@ export default function CityPage() {
             </div>
           </section>
 
+          <section style={{ marginBottom: 32, border: "1px solid #e5e5e5", borderRadius: 10, padding: 24, background: "#fafafa" }}>
+            <h2 style={{ fontSize: "1.25rem", marginBottom: 12, color: "#7a1f3d" }}>Related resources</h2>
+            <p style={{ margin: "0 0 12px 0", fontSize: 14, color: "#444" }}>Learn how to price your cakes and start your home bakery in Pakistan.</p>
+            <ul style={{ margin: 0, paddingLeft: 20, fontSize: 14, color: "#333" }}>
+              <li style={{ marginBottom: 6 }}><Link to="/tools/cake-pricing-calculator" style={{ color: "#7a1f3d", fontWeight: 600, textDecoration: "underline" }}>Cake Pricing Calculator</Link> — price your cakes for profit</li>
+              <li style={{ marginBottom: 6 }}><Link to="/blog/starting-home-bakery-pakistan" style={{ color: "#7a1f3d", fontWeight: 600, textDecoration: "underline" }}>Starting a Home Bakery in Pakistan (2026)</Link> — full guide</li>
+            </ul>
+          </section>
+
           <Feedback role="visitor" prompt={`Would a preorder link help your bakery in ${cityData?.name || city}?`} />
         </div>
       </div>

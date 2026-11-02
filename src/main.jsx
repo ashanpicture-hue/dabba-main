@@ -17,6 +17,7 @@ import CityPage from "./pages/programmatic/CityPage.jsx";
 import FeaturePage from "./pages/programmatic/FeaturePage.jsx";
 import ComparisonPage from "./pages/programmatic/ComparisonPage.jsx";
 import ToolPage from "./pages/programmatic/ToolPage.jsx";
+import BlogArticle from "./pages/BlogArticle.jsx";
 import { DEMO } from "./lib/api.js";
 import CookieBanner from "./components/CookieBanner.jsx";
 import { useConsent } from "./lib/consent.js";
@@ -59,6 +60,7 @@ function App() {
           <Route path="/features/:feature" element={<FeaturePage />} />
           <Route path="/compare/:competitor" element={<ComparisonPage />} />
           <Route path="/tools/:tool" element={<ToolPage />} />
+                    <Route path="/blog/:slug" element={<BlogArticle />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

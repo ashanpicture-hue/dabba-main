@@ -214,6 +214,7 @@ const SOURCES = [
   ["Karachi home bakers", "https://www.vouch365.com/blog/karachi-home-bakers/"],
   ["Eid cakes in Pakistan", "https://gulfnews.com/amp/world/asia/pakistan/elevating-eid-cakes-pakistani-home-bakers-whip-up-creativity-and-flavours-to-redefine-tradition-1.95288387"],
   ["Raw material costs, bakery survey", "https://www.bakingbusiness.com/articles/65766-tariff-impact-revealed-in-baking-and-snack-capital-spending-study"],
+  ["How home bakers in Pakistan take preorders without Instagram DMs (Medium)", "https://medium.com/@ashanpicture/how-home-bakers-in-pakistan-can-take-preorders-without-instagram-dms-a7d6e9325f3d"],
 ];
 
 const GALLERY = [
@@ -277,7 +278,7 @@ function Pricing() {
 const FOOT = [
   ["Product", [["Problems we fix", "/#problems"], ["Features", "/#features"], ["What bakers sell", "/#gallery"], ["Pricing", "/#pricing"]]],
   ["For bakers", [["Sign in", "/login"], ["Create an order link", "/login"], ...(DEMO ? [["Sample bakery", "/s/cocoa-crumb"], ["Sample custom request", "/s/cocoa-crumb/custom"]] : [])]],
-  ["Resources", [["How it works", "/#how"], ["Questions", "/#faq"], ["Sources", "/#sources"]]],
+  ["Resources", [["How it works", "/#how"], ["Questions", "/#faq"], ["Sources", "/#sources"], ["Start a bakery guide", "/blog/starting-home-bakery-pakistan"], ["Cake pricing calculator", "/tools/cake-pricing-calculator"]]],
 ];
 const FIcon = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...p} />;
 /** Social links come from env, so nothing is linked until the account really exists. */

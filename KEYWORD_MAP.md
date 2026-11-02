@@ -179,8 +179,8 @@
 
 | Week | Cluster | Content Piece | Format | Target Keywords | Status |
 |------|---------|---------------|--------|-----------------|--------|
-| 1 | Pricing | Cake Pricing Calculator | **Free Tool** | cake pricing calculator Pakistan, how to price cakes | 🔴 Build |
-| 2 | Starting | Complete Guide: Starting Home Bakery Pakistan | Article (3000+ words) | how to start home bakery in Pakistan | 🟡 Draft |
+| 1 | Pricing | Cake Pricing Calculator | **Free Tool** | cake pricing calculator Pakistan, how to price cakes | 🟢 Live |
+| 2 | Starting | Complete Guide: Starting Home Bakery Pakistan | Article (3000+ words) | how to start home bakery in Pakistan | 🟢 Live |
 | 3 | Pricing | Ingredient Cost Tracker | Template (Google Sheets/Excel) | ingredient cost tracking spreadsheet | 🟡 Build |
 | 4 | Instagram | Instagram Marketing for Home Bakers | Article + Carousel | Instagram marketing for home bakers | 🟡 Draft |
 | 5 | Legal | Home Bakery License Guide (Punjab + Sindh) | Article | home bakery license Pakistan, food license home kitchen | 🟡 Draft |
@@ -235,12 +235,27 @@
 
 ## Next Steps
 
-1. **Validate volumes** with Ahrefs/Semrush when available
-2. **Build `Dabba Price` calculator** (Week 1) — highest ROI keyword
-3. **Create `/bakeries/{city}` programmatic pages** for top 8 cities
-4. **Write Pillar 1** (Starting a Home Bakery) — cornerstone content
-5. **Set up Search Console** and track keyword positions weekly
-6. **Build internal linking** from blog → tools → signup
+1. **Validate volumes** with Ahrefs/Semrush when available — current estimates are unverified
+2. **Set up Search Console** — verification tag added to `index.html`; replace `REPLACE_WITH_GSC_VERIFICATION_TOKEN` with your actual token and verify `https://dabba.devs.surf`
+3. **Build Ingredient Cost Tracker template** (Week 3) — ingredient cost tracking spreadsheet
+4. **Write Instagram Marketing article** (Week 4) — Instagram marketing for home bakers
+5. **Write Home Bakery License Guide** (Week 5) — Punjab + Sindh
+6. **Build Baking Schedule Template** (Week 6) — template + article
+7. **Build Comparison page** (Week 7) — Dabba vs Instagram DMs vs WhatsApp vs Google Forms
+8. **Write Eid Cake Trends 2026** (Week 8) — seasonal article
+9. **Build Recipe Costing Calculator** (Week 10) — free tool
+10. **Write DM Scripts article** (Week 11) — article + PDF download
+11. **Write Operations pillar** (Week 12) — 4000+ word cornerstone content
+
+---
+
+### Completed (Foundation phase)
+
+- **Cake Pricing Calculator** — live at `/tools/cake-pricing-calculator` with working cost/profit/margin logic
+- **Pillar 1: Starting a Home Bakery in Pakistan (2026)** — live at `/blog/starting-home-bakery-pakistan` with Article, HowTo, FAQPage, BreadcrumbList schema
+- **Search Console** — verification meta tag added to `index.html` (token pending)
+- **Internal linking** — footer links to blog + calculator; city pages and tool pages link to related resources; blog article links to tools and signup
+- **Sitemap** — added `/blog/starting-home-bakery-pakistan` entry
 
 ---
 

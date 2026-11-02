@@ -157,6 +157,14 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Blog pages -->
+  <url>
+    <loc>https://dabba.devs.surf/blog/starting-home-bakery-pakistan</loc>
+    <lastmod>2026-11-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- Tool pages -->
   <url>
     <loc>https://dabba.devs.surf/tools/cake-pricing-calculator</loc>

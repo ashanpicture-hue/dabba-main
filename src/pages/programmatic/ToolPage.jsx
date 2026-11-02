@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { setPageSEO } from "../../lib/seo.js";
 import { organizationSchema, breadcrumbListSchema, faqPageSchema } from "../../lib/schema.js";
@@ -17,6 +17,7 @@ const TOOLS = {
       "See cost, profit, and margin per item",
       "Adjust prices until your margin works",
     ],
+    calculator: true,
   },
   "recipe-costing-calculator": {
     name: "Recipe Costing Calculator",
@@ -32,6 +33,98 @@ const TOOLS = {
     ],
   },
 };
+
+function CakePricingCalculator() {
+  const [inputs, setInputs] = useState({
+    flour: "0",
+    sugar: "0",
+    butter: "0",
+    eggs: "0",
+    other: "0",
+    packaging: "0",
+    delivery: "0",
+    timeMinutes: "0",
+    hourlyRate: "0",
+    items: "1",
+    sellingPrice: "0",
+  });
+
+  const n = (k) => parseFloat(inputs[k]) || 0;
+
+  const ingredientCost = n("flour") + n("sugar") + n("butter") + n("eggs") + n("other");
+  const laborCost = (n("timeMinutes") / 60) * n("hourlyRate");
+  const totalCost = ingredientCost + n("packaging") + n("delivery") + laborCost;
+  const costPerItem = totalCost / Math.max(n("items"), 1);
+  const sellingPrice = n("sellingPrice");
+  const profitPerItem = sellingPrice - costPerItem;
+  const margin = sellingPrice > 0 ? (profitPerItem / sellingPrice) * 100 : 0;
+
+  const update = (k, v) => setInputs({ ...inputs, [k]: v });
+
+  const field = (label, key, placeholder) => (
+    <div style={{ marginBottom: 12 }}>
+      <label style={{ display: "block", fontSize: 14, marginBottom: 4, color: "#333" }}>{label}</label>
+      <input
+        type="number"
+        step="0.01"
+        value={inputs[key]}
+        onChange={(e) => update(key, e.target.value)}
+        placeholder={placeholder}
+        style={{ width: "100%", padding: 8, border: "1px solid #ccc", borderRadius: 6, fontSize: 14, boxSizing: "border-box" }}
+      />
+    </div>
+  );
+
+  return (
+    <section style={{ marginBottom: 32, border: "1px solid #e5e5e5", borderRadius: 10, padding: 24, background: "#fafafa" }}>
+      <h2 style={{ fontSize: "1.5rem", marginBottom: 20 }}>Cake Pricing Calculator (PKR)</h2>
+      <p style={{ marginBottom: 20, color: "#555", fontSize: 14 }}>
+        Enter your costs below to see the true cost per cake, your profit, and your margin. Adjust the selling price until your margin works.
+      </p>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
+        {field("Flour (per cake, Rs)", "flour", "0")}
+        {field("Sugar (per cake, Rs)", "sugar", "0")}
+        {field("Butter / oil (per cake, Rs)", "butter", "0")}
+        {field("Eggs (per cake, Rs)", "eggs", "0")}
+        {field("Other ingredients (Rs)", "other", "0")}
+        {field("Packaging (per cake, Rs)", "packaging", "0")}
+        {field("Delivery (per order, Rs)", "delivery", "0")}
+        {field("Time spent (minutes)", "timeMinutes", "0")}
+        {field("Your hourly rate (Rs/hr)", "hourlyRate", "0")}
+        {field("Number of cakes", "items", "1")}
+        {field("Selling price per cake (Rs)", "sellingPrice", "0")}
+      </div>
+
+      <div style={{ border: "2px solid #7a1f3d", borderRadius: 8, padding: 20, background: "#fff" }}>
+        <h3 style={{ margin: "0 0 16px 0", fontSize: "1.25rem", color: "#7a1f3d" }}>Results</h3>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, fontSize: 14 }}>
+          <div><div style={{ color: "#666", fontSize: 12, textTransform: "uppercase" }}>Total ingredient cost</div><div style={{ fontWeight: 600 }}>{ingredientCost.toFixed(2)} Rs</div></div>
+          <div><div style={{ color: "#666", fontSize: 12, textTransform: "uppercase" }}>Labour cost</div><div style={{ fontWeight: 600 }}>{laborCost.toFixed(2)} Rs</div></div>
+          <div><div style={{ color: "#666", fontSize: 12, textTransform: "uppercase" }}>Total cost (all cakes)</div><div style={{ fontWeight: 600 }}>{totalCost.toFixed(2)} Rs</div></div>
+          <div><div style={{ color: "#666", fontSize: 12, textTransform: "uppercase" }}>Cost per cake</div><div style={{ fontWeight: 600 }}>{costPerItem.toFixed(2)} Rs</div></div>
+          <div><div style={{ color: "#666", fontSize: 12, textTransform: "uppercase" }}>Profit per cake</div><div style={{ fontWeight: 600, color: profitPerItem >= 0 ? "#1a7a1a" : "#b00020" }}>{profitPerItem.toFixed(2)} Rs</div></div>
+          <div><div style={{ color: "#666", fontSize: 12, textTransform: "uppercase" }}>Profit margin</div><div style={{ fontWeight: 600, color: margin >= 30 ? "#1a7a1a" : margin >= 15 ? "#b8860b" : "#b00020" }}>{margin.toFixed(0)}%</div></div>
+        </div>
+        {sellingPrice > 0 && profitPerItem <= 0 && (
+          <p style={{ marginTop: 12, color: "#b00020", fontSize: 14, fontWeight: 600 }}>
+            ⚠️ At this price you lose money on every cake. Raise your selling price or lower your costs.
+          </p>
+        )}
+        {sellingPrice > 0 && profitPerItem > 0 && margin < 30 && (
+          <p style={{ marginTop: 12, color: "#b8860b", fontSize: 14, fontWeight: 600 }}>
+            ⚠️ Your margin is below 30%. Consider raising prices or cutting costs.
+          </p>
+        )}
+        {sellingPrice > 0 && margin >= 30 && (
+          <p style={{ marginTop: 12, color: "#1a7a1a", fontSize: 14, fontWeight: 600 }}>
+            ✅ Your margin looks healthy. This price is worth testing.
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}
 
 const toolFaqs = [
   ["Is it free?", "Yes. These tools are free for all Dabba users during the pilot."],
@@ -101,6 +194,8 @@ export default function ToolPage() {
             </ol>
           </section>
 
+          {t.calculator && <CakePricingCalculator />}
+
           <section style={{ marginBottom: 32 }}>
             <h2 style={{ fontSize: "1.5rem", marginBottom: 16 }}>Start using {t.name}</h2>
             <p>Create your free Dabba order link and start using {t.name.toLowerCase()} today. No card needed.</p>
@@ -117,6 +212,12 @@ export default function ToolPage() {
                 </details>
               ))}
             </div>
+          </section>
+
+          <section style={{ marginBottom: 32, border: "1px solid #e5e5e5", borderRadius: 10, padding: 24, background: "#fafafa" }}>
+            <h2 style={{ fontSize: "1.25rem", marginBottom: 12, color: "#7a1f3d" }}>Related guide</h2>
+            <p style={{ margin: "0 0 12px 0", fontSize: 14, color: "#444" }}>Learn how to start and run a home bakery in Pakistan — licences, pricing, equipment, and your first preorder link.</p>
+            <Link to="/blog/starting-home-bakery-pakistan" style={{ color: "#7a1f3d", fontWeight: 600, textDecoration: "underline" }}>Read: Complete Guide to Starting a Home Bakery in Pakistan (2026)</Link>
           </section>
 
           <Feedback role="visitor" prompt={`Would ${t.name} help your bakery?`} />
