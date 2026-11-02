@@ -22,3 +22,6 @@ export function Alert({ variant = "default", icon, className = "", role, childre
 
 export const AlertTitle = ({ className = "", ...p }) => <div className={`alert-title ${className}`.trim()} {...p} />;
 export const AlertDescription = ({ className = "", ...p }) => <div className={`alert-desc ${className}`.trim()} {...p} />;
+
+/** Buttons that belong to an alert, like Show and Dismiss. Put them last inside <Alert>. */
+export const AlertActions = ({ className = "", ...p }) => <div className={`alert-actions ${className}`.trim()} {...p} />;

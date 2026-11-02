@@ -75,7 +75,7 @@ export default function Request() {
       <header>
         <h1 style={{ marginBottom: 6 }}>Request a custom cake</h1>
         <p className="muted" style={{ margin: 0 }}>Tell {shop.name} what you have in mind. They'll reply with a price. Your date is only booked once you accept the price and pay the advance.</p>
-        {shop.custom_note && <div className="sunk small" style={{ marginTop: 12 }}>{shop.custom_note}</div>}
+        {shop.custom_note && <div style={{ marginTop: 12 }}><Alert><AlertDescription>{shop.custom_note}</AlertDescription></Alert></div>}
       </header>
 
       <section className="stack">

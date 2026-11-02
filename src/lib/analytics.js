@@ -1,20 +1,20 @@
 // GA4 analytics wrapper with consent gating.
-// gtag.js loads immediately so Google's verification crawler detects it.
-// Events (page_view, etc.) are only sent after user consents via cookie banner.
+// gtag.js loads only after the person accepts analytics in the cookie banner.
 // All event names use object-action format (lowercase, underscores).
 
 let measurementId = null;
 
 function hasAnalyticsConsent() {
-  const consent = localStorage.getItem('dabba-consent-v1');
+  let consent = null;
+  try { consent = localStorage.getItem('dabba-consent-v1'); } catch {}
   if (!consent) return false;
   try { return JSON.parse(consent).analytics === true; } catch { return false; }
 }
 
 export function initGA4(id) {
+  if (measurementId) return; // load gtag.js once
   measurementId = id;
 
-  // Load gtag.js script IMMEDIATELY (for verification)
   const script = document.createElement("script");
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;

@@ -190,7 +190,7 @@ export default function Shop() {
     } catch (err) { setError(err.message); setBusy(false); }
   }
 
-  const shopSchema = data ? localBusinessSchema(data.shop) : null;
+  const shopSchema = data ? localBusinessSchema(data.shop, data.items) : null;
 
   return (
     <>

@@ -9,7 +9,7 @@ export default function CookieBanner() {
     <section className="cookie" role="dialog" aria-modal="false" aria-labelledby="cookie-h" aria-describedby="cookie-p">
       <h2 id="cookie-h">Cookies and analytics</h2>
       <p id="cookie-p">
-        We count page visits with Vercel Analytics, anonymously, to see where people get stuck. No advertising trackers. <Link to="/privacy#cookies">What else is stored</Link>
+        We count page visits anonymously with Vercel Analytics and Google Analytics, to see where people get stuck. No advertising trackers. <Link to="/privacy#cookies">What else is stored</Link>
       </p>
       <div className="row">
         <button type="button" className="btn" onClick={() => setConsent(false)}>Decline</button>

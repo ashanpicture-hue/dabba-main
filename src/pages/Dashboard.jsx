@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Alert, AlertDescription } from "../components/ui/alert.jsx";
+import { Alert, AlertTitle, AlertDescription, AlertActions } from "../components/ui/alert.jsx";
+import ConfirmDialog from "../components/ConfirmDialog.jsx";
 import { useNavigate, Link } from "react-router-dom";
 import { api, DEMO, shrinkImage } from "../lib/api.js";
 import {
@@ -22,7 +23,7 @@ export default function Dashboard() {
     setPageSEO({
       title: "Dashboard · Dabba Baker Dashboard",
       description: "Your Dabba baker dashboard. Live order alerts, daily baking list, menu editor, recipe costing, and shop settings.",
-      canonical: "https://dabba.vercel.app/app",
+      canonical: "https://dabba.devs.surf/app",
       noIndex: true,
     });
   }, []);
@@ -117,9 +118,15 @@ function Workspace({ shop, setShop, tab, setTab, onSignOut }) {
       <ShareLink link={link} />
       <AlertBar alerts={alerts} />
       {alerts.toast && (
-        <div className="ok row between" role="status" style={{ marginTop: 12 }}>
-          <span>{alerts.toast}</span>
-          <div className="row" style={{ gap: 8 }}><button className="btn sm" onClick={() => { setTab("orders"); alerts.clearToast(); }}>Show</button><button className="btn sm ghost" onClick={alerts.clearToast}>Dismiss</button></div>
+        <div style={{ marginTop: 12 }}>
+          <Alert variant="success" role="status">
+            <AlertTitle>Needs you</AlertTitle>
+            <AlertDescription>{alerts.toast}</AlertDescription>
+            <AlertActions>
+              <button className="btn sm" onClick={() => { setTab("orders"); alerts.clearToast(); }}>Show</button>
+              <button className="btn sm ghost" onClick={alerts.clearToast}>Dismiss</button>
+            </AlertActions>
+          </Alert>
         </div>
       )}
       <div className="tabs" role="tablist" style={{ margin: "18px 0" }}>
@@ -137,12 +144,17 @@ function Workspace({ shop, setShop, tab, setTab, onSignOut }) {
 }
 
 function AlertBar({ alerts }) {
-  if (alerts.perm === "unsupported") return <p className="small muted" style={{ margin: "8px 0 0" }}>New orders appear here automatically and play a sound while this page is open.</p>;
-  if (alerts.perm === "granted") return <p className="small muted" style={{ margin: "8px 0 0" }}>Order alerts are on. Keep this page open on your phone or computer to hear new orders.</p>;
+  const wrap = { marginTop: 12 };
+  if (alerts.perm === "unsupported") return <div style={wrap}><Alert><AlertDescription>New orders appear here automatically and play a sound while this page is open.</AlertDescription></Alert></div>;
+  if (alerts.perm === "granted") return <div style={wrap}><Alert variant="success"><AlertTitle>Order alerts are on</AlertTitle><AlertDescription>Keep this page open on your phone or computer to hear new orders.</AlertDescription></Alert></div>;
+  const denied = alerts.perm === "denied";
   return (
-    <div className="sunk row between small" style={{ marginTop: 12 }}>
-      <span>{alerts.perm === "denied" ? "Notifications are blocked in your browser settings. You'll still hear a sound on this page." : "Get a sound and a notification when an order or request comes in."}</span>
-      {alerts.perm === "default" && <button className="btn sm primary" onClick={alerts.enable}>Turn on order alerts</button>}
+    <div style={wrap}>
+      <Alert variant={denied ? "warning" : "default"}>
+        <AlertTitle>{denied ? "Notifications are blocked" : "Turn on order alerts"}</AlertTitle>
+        <AlertDescription>{denied ? "Allow them in your browser settings. You'll still hear a sound on this page." : "Get a sound and a notification when an order or request comes in."}</AlertDescription>
+        {!denied && <AlertActions><button className="btn sm primary" onClick={alerts.enable}>Turn on</button></AlertActions>}
+      </Alert>
     </div>
   );
 }
@@ -268,6 +280,7 @@ function QuoteForm({ o, shop, onDone, onCancel }) {
 function OrderRow({ o, shop, onChange }) {
   const [proof, setProof] = useState(null);
   const [quoting, setQuoting] = useState(false);
+  const [confirmCancel, setConfirmCancel] = useState(false);
   const msg = messages(shop, o, location.origin);
   const wa = (k) => waLink(o.customer_phone, msg[k]);
   const update = async (patch, open) => { if (open) window.open(open, "_blank", "noopener"); await api.updateOrder(o.id, patch); onChange(); };
@@ -308,10 +321,11 @@ function OrderRow({ o, shop, onChange }) {
         {o.status === "confirmed" && <a className="btn sm" href={wa("reminder")} target="_blank" rel="noreferrer">Send reminder</a>}
         {o.status === "confirmed" && <button className="btn sm" onClick={() => update({ status: "ready" }, wa("ready"))}>{o.fulfilment === "delivery" ? "Out for delivery" : "Ready for pickup"}</button>}
         {o.status === "ready" && <button className="btn sm" onClick={() => update({ status: "delivered" }, wa("thanks"))}>Done, say thanks</button>}
-        {["new", "confirmed", "ready"].includes(o.status) && <button className="btn sm ghost" onClick={() => { if (window.confirm(`Cancel order ${o.code}? The date's slots open again.`)) update({ status: "cancelled" }); }}>Cancel</button>}
+        {["new", "confirmed", "ready"].includes(o.status) && <button className="btn sm ghost" onClick={() => setConfirmCancel(true)}>Cancel</button>}
         <a className="btn sm ghost" href={waLink(o.customer_phone)} target="_blank" rel="noreferrer">Chat</a>
         <a className="btn sm ghost" href={statusUrl(location.origin, o)} target="_blank" rel="noreferrer">Customer view</a>
       </div>
+      {confirmCancel && <ConfirmDialog title={`Cancel order ${o.code}?`} description="The date's slots open again. Tell the customer on WhatsApp if you haven't already." confirmLabel="Cancel order" onCancel={() => setConfirmCancel(false)} onConfirm={() => { setConfirmCancel(false); update({ status: "cancelled" }); }} />}
     </div>
   );
 }
@@ -416,6 +430,7 @@ function ItemForm({ shop, item, onClose, onSaved }) {
   const [f, setF] = useState({ ...item, price: item.price ?? "", options: (item.options || []).map((g) => ({ ...g, choices: [...(g.choices || [])] })) });
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const set = (k) => (e) => setF((x) => ({ ...x, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value }));
   async function pickPhoto(e) {
     const file = e.target.files?.[0]; if (!file) return;
@@ -467,8 +482,9 @@ function ItemForm({ shop, item, onClose, onSaved }) {
       <div className="row">
         <button className="btn primary" disabled={uploading}>Save</button>
         <button type="button" className="btn ghost" onClick={onClose}>Cancel</button>
-        {f.id && <button type="button" className="btn ghost" onClick={async () => { if (window.confirm("Delete this item? Past orders keep their details.")) { await api.deleteItem(f.id); onSaved(); } }}>Delete</button>}
+        {f.id && <button type="button" className="btn ghost" onClick={() => setConfirmDelete(true)}>Delete</button>}
       </div>
+      {confirmDelete && <ConfirmDialog title={`Delete ${f.name || "this item"}?`} description="Past orders keep their details. This can\'t be undone." confirmLabel="Delete item" onCancel={() => setConfirmDelete(false)} onConfirm={async () => { await api.deleteItem(f.id); onSaved(); }} />}
     </form>
   );
 }

@@ -20,8 +20,8 @@ export default function Privacy() {
     setPageSEO({
       title: "Privacy Policy · Dabba Preorders for Home Bakers",
       description: "How Dabba collects, uses, and protects your data. Covers baker accounts, customer orders, payment screenshots, analytics consent, and your rights.",
-      canonical: "https://dabba.vercel.app/privacy",
-      ogImage: "https://dabba.vercel.app/img/tart.webp",
+      canonical: "https://dabba.devs.surf/privacy",
+      ogImage: "https://dabba.devs.surf/img/tart.webp",
     });
     if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
   }, []);
@@ -32,16 +32,16 @@ export default function Privacy() {
         <Link to="/" className="logo">Dabba</Link>
         <div>
           <h1 style={{ marginBottom: 6 }}>Privacy Policy</h1>
-          <p className="muted" style={{ margin: 0 }}>Dabba is in demo mode; this policy will be updated as the service changes.</p>
+          <p className="muted" style={{ margin: 0 }}>Last updated: 2 November 2026. Dabba is in demo mode; this policy will be updated as the service changes.</p>
         </div>
 
         {/* Key changes block */}
         <section className="card stack" style={{ gap: 8 }}>
           <h3 style={{ fontSize: "1.1rem", margin: 0 }}>Key changes in this update</h3>
           <ul style={{ margin: 0, paddingInlineStart: 20 }}>
-            <li>Rewritten to match what the code actually does (see specs/legal/audit-2026-11-02.md).</li>
+            <li>Rewritten to match what the code actually does.</li>
             <li>Adds controller identification, contact details, subprocessors, retention, and user-rights sections.</li>
-            
+
             <li>No attorney review has been performed.</li>
           </ul>
         </section>
@@ -58,7 +58,7 @@ export default function Privacy() {
 
         <S h="1. Who we are">
           <p className="muted" style={{ margin: 0 }}>
-            Dabba (<a href="https://dabba.vercel.app" target="_blank" rel="noreferrer">dabba.vercel.app</a>) is operated by an independent developer based in Pakistan.
+            Dabba (<a href="https://dabba.devs.surf" target="_blank" rel="noreferrer">dabba.devs.surf</a>) is operated by an independent developer based in Pakistan.
           </p>
           <p className="muted" style={{ margin: 0 }}>
             <b>Controller:</b> not yet established as a company.
@@ -70,7 +70,7 @@ export default function Privacy() {
 
           <h4 style={{ margin: "12px 0 4px 0", fontSize: "1rem" }}>Bakers (shop owners)</h4>
           <ul style={{ margin: 0, paddingInlineStart: 20 }}>
-            <li>Email address - used for sign-in via a one-time sign-in link (no password). <span className="muted">(src/pages/Login.jsx, src/lib/api.js)</span></li>
+            <li>Email address - used for sign-in via a one-time sign-in link (no password).</li>
             <li>Bakery name, slug, tagline, Instagram handle, WhatsApp number, city.</li>
             <li>Payment details you choose to display (bank, Raast, or wallet information) - shown to customers so they can pay you directly.</li>
             <li>Pickup address (optional).</li>
@@ -98,13 +98,13 @@ export default function Privacy() {
             <li>Anonymous page visits and interactions - only if you accept analytics in the cookie banner.</li>
             <li>No names, phone numbers, or addresses are sent to analytics.</li>
             <li>IP addresses are anonymized.</li>
-            <li>Providers: Vercel Analytics and Google Analytics 4 (GA4). <span className="muted">(src/lib/analytics.js, TRACKING_PLAN.md)</span></li>
+            <li>Providers: Vercel Analytics and Google Analytics 4 (GA4).</li>
           </ul>
 
           <h4 style={{ margin: "12px 0 4px 0", fontSize: "1rem" }}>Address checks</h4>
           <ul style={{ margin: 0, paddingInlineStart: 20 }}>
-            <li>When you enter a delivery address, the address text alone is sent to OpenStreetMap's Nominatim service to check whether it matches a real place.</li>
-            <li>Your name and phone number are <b>not</b> sent. <span className="muted">(src/lib/geocode.js)</span></li>
+            <li>When you enter a delivery address, the address text alone is sent to Geoapify's geocoding service to check whether it matches a real place.</li>
+            <li>Your name and phone number are <b>not</b> sent.</li>
           </ul>
         </S>
 
@@ -153,7 +153,7 @@ export default function Privacy() {
                 <td style={{ padding: "6px 8px", fontSize: "0.875rem" }}>Page views, custom events (IP anonymized, only with consent)</td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 8px", fontSize: "0.875rem" }}><b>OpenStreetMap (Nominatim)</b></td>
+                <td style={{ padding: "6px 8px", fontSize: "0.875rem" }}><b>Geoapify</b></td>
                 <td style={{ padding: "6px 8px", fontSize: "0.875rem" }}>Address verification</td>
                 <td style={{ padding: "6px 8px", fontSize: "0.875rem" }}>Address text only (name and phone not sent)</td>
               </tr>
@@ -168,7 +168,7 @@ export default function Privacy() {
           <p className="muted" style={{ margin: 0 }}>
             The website runs on Vercel. Order data, files, and sign-in run on Supabase. Both may store data outside Pakistan.
             The exact country depends on the region chosen when the Supabase project is created and on Vercel's infrastructure.
-            OpenStreetMap is based in the UK. Google (GA4) is based in the US.
+            Google (GA4) is based in the US.
           </p>
           <p className="muted" style={{ margin: "8px 0 0 0" }}>
             No Standard Contractual Clauses or other transfer mechanism are currently in place. This is a gap to close if you have EU or UK users.
@@ -183,7 +183,7 @@ export default function Privacy() {
             <li>Baker shops and orders: kept while the shop is active. You can close your shop at any time from the dashboard.</li>
             <li>Customer orders: kept as part of the bakery's order record. Ask the bakery to correct or delete your order.</li>
             <li>Feedback: kept to help us decide what to build next.</li>
-            <li>Analytics consent: stored for 1 year, then you are asked again. <span className="muted">(src/lib/consent.js)</span></li>
+            <li>Analytics consent: stored for 1 year, then you are asked again.</li>
             <li>Demo-mode data: kept in your browser only; clearing localStorage removes it.</li>
           </ul>
           <p className="muted" style={{ margin: "8px 0 0 0" }}>
@@ -204,7 +204,7 @@ export default function Privacy() {
           </p>
         </S>
 
-        <S h="9. Cookies and analytics">
+        <S h="9. Cookies and analytics" id="cookies">
           <p className="muted" style={{ margin: 0 }}>
             We count anonymous page visits with Vercel Analytics and Google Analytics 4 (GA4). Nothing is sent until you accept analytics in the cookie banner.
             If you decline, we count nothing. IP addresses are anonymized. No names, phone numbers, or addresses are sent to analytics.
@@ -260,9 +260,9 @@ export default function Privacy() {
           </p>
         </S>
 
-        <SiteFooter />
         <Feedback role="visitor" prompt="Questions about your data?" />
       </div>
+      <SiteFooter />
     </>
   );
 }

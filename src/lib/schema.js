@@ -1,21 +1,16 @@
-// JSON-LD structured data for Dabba — Organization, LocalBusiness, FAQPage, and WebSite schemas.
+// JSON-LD structured data for Dabba — Organization, LocalBusiness, FAQPage, WebSite, Article, HowTo, Speakable, Person, BreadcrumbList schemas.
 // Inject these into the <head> of the relevant pages (server-rendered or via React Helmet equivalent).
+
+const BASE_URL = "https://dabba.devs.surf";
 
 export const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Dabba",
-  "url": "https://dabba.devs.surf",
-  "logo": "https://dabba.devs.surf/favicon.svg",
+  "url": BASE_URL,
+  "logo": `${BASE_URL}/favicon.svg`,
   "description": "Preorder links for home bakers in Pakistan. One order link: menu with prices, daily limits, deposits, and WhatsApp updates.",
-  "founder": {
-    "@type": "Person",
-    "name": "Dabba Team"
-  },
-  "address": {
-    "@type": "PostalAddress",
-    "addressCountry": "PK"
-  },
+  "address": { "@type": "PostalAddress", "addressCountry": "PK" },
   "contactPoint": {
     "@type": "ContactPoint",
     "contactType": "customer service",
@@ -27,32 +22,37 @@ export const organizationSchema = {
   ]
 };
 
-export const localBusinessSchema = (shop) => ({
+export const personSchema = {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
+  "@type": "Person",
+  "name": "Dabba Team",
+  "url": BASE_URL,
+  "jobTitle": "Home Bakery Platform Team",
+  "worksFor": {
+    "@type": "Organization",
+    "name": "Dabba",
+    "url": BASE_URL
+  }
+};
+
+export const localBusinessSchema = (shop, items = []) => ({
+  "@context": "https://schema.org",
+  "@type": "Bakery",
   "name": shop.name,
-  "image": shop.image_url || "https://dabba.devs.surf/favicon.svg",
-  "url": `https://dabba.devs.surf/s/${shop.slug}`,
+  "image": shop.image_url || `${BASE_URL}/favicon.svg`,
+  "url": `${BASE_URL}/s/${shop.slug}`,
   "telephone": shop.whatsapp,
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": shop.city,
-    "addressCountry": "PK"
-  },
+  "address": { "@type": "PostalAddress", "addressLocality": shop.city, "addressCountry": "PK" },
   "priceRange": "Rs",
-  "servesArea": (shop.delivery_zones || []).map((z) => z.name),
+  "areaServed": (shop.delivery_zones || []).map((z) => z.name),
   "hasOfferCatalog": {
     "@type": "OfferCatalog",
     "name": "Menu",
-    "itemOffered": (shop.items || []).map((item) => ({
+    "itemListElement": items.map((item) => ({
       "@type": "Offer",
-      "itemOffered": {
-        "@type": "Product",
-        "name": item.name,
-        "description": item.description,
-        "price": `Rs ${item.price}`,
-        "priceCurrency": "PKR"
-      }
+      "price": String(item.price),
+      "priceCurrency": "PKR",
+      "itemOffered": { "@type": "Product", "name": item.name, "description": item.description || undefined }
     }))
   }
 });
@@ -116,9 +116,53 @@ export const webSiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "Dabba",
-  "url": "https://dabba.devs.surf",
+  "url": BASE_URL,
   "description": "Preorder links for home bakers in Pakistan. One order link: menu with prices, daily limits, deposits, and WhatsApp updates."
 };
+
+export const articleSchema = ({ headline, image, datePublished, dateModified, author, description, publisher }) => ({
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": headline,
+  "image": image || `${BASE_URL}/img/tart.webp`,
+  "datePublished": datePublished,
+  "dateModified": dateModified || datePublished,
+  "author": author || personSchema,
+  "publisher": publisher || {
+    "@type": "Organization",
+    "name": "Dabba",
+    "url": BASE_URL,
+    "logo": { "@type": "ImageObject", "url": `${BASE_URL}/favicon.svg` }
+  },
+  "description": description,
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": BASE_URL
+  }
+});
+
+export const howToSchema = ({ name, description, steps, image, totalTime }) => ({
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": name,
+  "description": description,
+  "image": image || `${BASE_URL}/img/tart.webp`,
+  "totalTime": totalTime || "PT30M",
+  "step": steps.map((step, index) => ({
+    "@type": "HowToStep",
+    "position": index + 1,
+    "name": step.name,
+    "text": step.text,
+    "image": step.image || `${BASE_URL}/img/tart.webp`
+  }))
+});
+
+export const speakableSchema = ({ cssSelector, xpath }) => ({
+  "@context": "https://schema.org",
+  "@type": "SpeakableSpecification",
+  "cssSelector": cssSelector,
+  "xpath": xpath
+});
 
 export const breadcrumbListSchema = (items) => ({
   "@context": "https://schema.org",

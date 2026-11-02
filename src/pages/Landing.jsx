@@ -32,20 +32,20 @@ function SceneDMs({ on }) {
 function SceneOrder({ on }) {
   return (
     <div className={`lp-scene ${on ? "on" : ""}`} aria-hidden={!on}>
-      <h5>dabba-psi.vercel.app/s/cocoa-crumb</h5>
+      <h5>dabba.devs.surf/s/cocoa-crumb</h5>
       <div style={{ fontFamily: "var(--display)", fontSize: 22, lineHeight: 1.1 }}>Cocoa Crumb</div>
       <div className="lp-card" style={{ display: "flex", gap: 10 }}>
         <img src="/img/tart.webp" alt="Chocolate tart with berries" width="64" height="64" style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 10, flex: "none" }} loading="lazy" />
         <div style={{ minWidth: 0 }}>
           <div className="lp-row"><span className="t">Chocolate tart</span><span className="lp-chip">1</span></div>
-          <div style={{ color: "#6f5f59" }}>10 inch · berries · “Happy 30th Sara”</div>
+          <div style={{ color: "var(--s-sub)" }}>10 inch · berries · “Happy 30th Sara”</div>
           <b>Rs 4,950</b>
         </div>
       </div>
       <div className="lp-dates">
         <div className="x">Fri<b>30</b></div><div className="sel">Sat<b>31</b></div><div>Sun<b>1</b></div><div className="x">Mon<b>2</b></div>
       </div>
-      <div className="lp-card"><div className="lp-row"><span>Advance via Raast</span><b>Rs 2,650</b></div><div className="lp-row" style={{ marginTop: 4 }}><span style={{ color: "#6f5f59" }}>Screenshot</span><span className="lp-chip g">Uploaded</span></div></div>
+      <div className="lp-card"><div className="lp-row"><span>Advance via Raast</span><b>Rs 2,650</b></div><div className="lp-row" style={{ marginTop: 4 }}><span style={{ color: "var(--s-sub)" }}>Screenshot</span><span className="lp-chip g">Uploaded</span></div></div>
       <div className="lp-cta">Place order · Rs 5,300</div>
     </div>
   );
@@ -63,7 +63,7 @@ function SceneAlert({ on }) {
       <h5 style={{ marginTop: 6 }}>Saturday 31 Oct</h5>
       <div className="lp-card">
         <div className="lp-row"><b>K7Q2M9</b><span><span className="lp-chip">New</span> <span className="lp-chip w">Check payment</span></span></div>
-        <div style={{ color: "#6f5f59", marginTop: 4 }}>1 × Chocolate tart (10 inch, berries)</div>
+        <div style={{ color: "var(--s-sub)", marginTop: 4 }}>1 × Chocolate tart (10 inch, berries)</div>
       </div>
       <div className="lp-card">
         <div className="lp-row" style={{ marginBottom: 6 }}><span>Slots booked</span><b>6 of 8</b></div>
@@ -85,7 +85,7 @@ function SceneWhatsApp({ on }) {
       <div className="head">Sana · WhatsApp</div>
       <div className="lp-bubble">Hi Sana, your Cocoa Crumb order K7Q2M9 is confirmed for Saturday 31 October. Rs 2,650 due on delivery. Track it: dabba…/o/K7Q2M9<small>✓✓ 4:12 pm</small></div>
       <div className="lp-bubble in">Thank you!! Can't wait 😍</div>
-      <div className="lp-bubble">A reminder that your order is for delivery tomorrow 🎂<small>✓✓ Fri 6:00 pm</small></div>
+      <div className="lp-bubble">A reminder that your order is for delivery tomorrow<small>✓✓ Fri 6:00 pm</small></div>
     </div>
   );
 }
@@ -122,14 +122,13 @@ function Banner({ onView }) {
 
         <div className="lp-hero-grid">
           <div>
-            <span className="lp-eyebrow"><i />For home bakers in Pakistan</span>
+            <span className="lp-eyebrow">For home bakers in Pakistan</span>
             <h1>From <em>“price?”</em> to paid order, without a single DM.</h1>
             <p className="lead">Dabba gives your bakery one order link. Customers see your menu, pick an open date, pay the advance and upload proof. You get an alert, a baking list and one-tap WhatsApp replies.</p>
             <div className="row" style={{ gap: 12 }}>
               <Link to="/login" className="lp-btn solid" onClick={() => trackEvent("cta_clicked", { button_text: "Create your free order link", location: "hero" })}>Create your free order link</Link>
               {DEMO ? <Link to="/s/cocoa-crumb" className="lp-btn line" onClick={() => trackEvent("cta_clicked", { button_text: "Try the sample bakery", location: "hero" })}>Try the sample bakery</Link> : <a href="#how" className="lp-btn line" onClick={() => trackEvent("cta_clicked", { button_text: "See how it works", location: "hero" })}>See how it works</a>}
             </div>
-            <div className="lp-pay"><span>Raast, bank, Easypaisa, JazzCash</span><span>WhatsApp built in</span><span>No app for customers</span></div>
           </div>
 
           <div className="lp-stage" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
@@ -183,7 +182,7 @@ const FEATURES = [
   { tag: "Payments", h: "Money first, then baking", p: "Ask for 50% or full payment upfront. Customers pay by Raast, bank, Easypaisa or JazzCash and upload the screenshot with their order. Dabba never touches the money.", li: ["Payment details with a copy button", "Screenshot attached to the order", "One-tap “payment not found” message"],
     mock: <div className="lp-card"><div className="lp-row"><b>K7Q2M9 · Rs 5,300</b><span className="lp-chip w">Check payment</span></div><div style={{ height: 70, borderRadius: 10, background: "var(--sunk)", margin: "8px 0", display: "grid", placeItems: "center", color: "var(--sub)", fontSize: 12 }}>Transfer screenshot</div><div className="lp-row"><span className="lp-chip g">Payment received</span><span className="lp-chip">Not found</span></div></div> },
   { tag: "Alerts and WhatsApp", h: "Hear every order. Reply in one tap.", p: "The dashboard rings when an order, request or payment arrives. Each action opens WhatsApp with the message already written: confirmation, reminder, out for delivery, thank you.", li: ["Sound and browser notification", "Ready-written WhatsApp messages", "Tracking link in every confirmation"],
-    mock: <><div className="lp-toast" style={{ borderRadius: 14 }}><b><Bell /> New order</b><br />Sana · Rs 5,300 · Sat 31 Oct</div><div className="lp-bubble" style={{ alignSelf: "stretch", maxWidth: "none", color: "#2a1d1a" }}>Hi Sana, your order K7Q2M9 is confirmed for Saturday…</div></> },
+    mock: <><div className="lp-toast" style={{ borderRadius: 14 }}><b><Bell /> New order</b><br />Sana · Rs 5,300 · Sat 31 Oct</div><div className="lp-bubble" style={{ alignSelf: "stretch", maxWidth: "none", color: "var(--s-ink)" }}>Hi Sana, your order K7Q2M9 is confirmed for Saturday…</div></> },
   { tag: "Baking list and costing", h: "Know what to bake, and what you earn", p: "The baking list adds up every order for the day, split by size and flavour. The costing tool turns today's ingredient prices into cost and profit per item.", li: ["Daily totals by size and flavour", "Messages to pipe, listed per order", "Profit and margin at today's prices"],
     mock: <><img className="lp-photo" src="/img/brownies.webp" alt="Fudge brownies in a gift box" loading="lazy" width="1024" height="768" /><div className="lp-card"><div className="lp-row"><span>Chocolate tart (10 inch)</span><b>3</b></div><div className="lp-row"><span>Chocolate tart (8 inch)</span><b>2</b></div><div className="lp-row"><span>Brownie box</span><b>4</b></div></div><div className="lp-card"><div className="lp-row"><span>Profit per tart</span><b style={{ color: "var(--good)" }}>Rs 835</b></div><div className="lp-row"><span>Margin</span><b>26%</b></div></div></> },
 ];
@@ -275,29 +274,46 @@ function Pricing() {
   );
 }
 
+const FOOT = [
+  ["Product", [["Problems we fix", "/#problems"], ["Features", "/#features"], ["What bakers sell", "/#gallery"], ["Pricing", "/#pricing"]]],
+  ["For bakers", [["Sign in", "/login"], ["Create an order link", "/login"], ...(DEMO ? [["Sample bakery", "/s/cocoa-crumb"], ["Sample custom request", "/s/cocoa-crumb/custom"]] : [])]],
+  ["Resources", [["How it works", "/#how"], ["Questions", "/#faq"], ["Sources", "/#sources"]]],
+];
+const FIcon = (p) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...p} />;
+/** Social links come from env, so nothing is linked until the account really exists. */
+const SOCIAL = [
+  ["Instagram", import.meta.env.VITE_INSTAGRAM_URL, <FIcon key="i"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><path d="M17.5 6.5h.01" /></FIcon>],
+  ["X", import.meta.env.VITE_X_URL, <FIcon key="x" fill="currentColor" stroke="none"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></FIcon>],
+  ["LinkedIn", import.meta.env.VITE_LINKEDIN_URL, <FIcon key="l"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" /></FIcon>],
+].filter(([, url]) => url);
+
+const FLink = ({ to, children }) => (to.includes("#") ? <a href={to}>{children}</a> : <Link to={to}>{children}</Link>);
+
 function SiteFooter() {
   return (
-    <footer className="lp-footer">
-      <div className="wrap">
-        <div className="lp-foot-top">
-          <div className="lp-foot-brand">
-            <Link to="/" className="logo" style={{ color: "inherit" }}>Dabba</Link>
-            <p>Preorder links for home bakers. Menu, dates, deposits and WhatsApp in one place.</p>
-            <Link to="/login" className="lp-btn solid" style={{ minHeight: 42 }}>Create your free order link</Link>
+    <footer className="dft">
+      <div className="dft-card">
+        <nav className="dft-cols" aria-label="Footer">
+          {FOOT.map(([h, links]) => (
+            <div key={h}><h4>{h}</h4><ul>{links.map(([n, to]) => <li key={n}><FLink to={to}>{n}</FLink></li>)}</ul></div>
+          ))}
+          <div><h4>Legal</h4><ul>
+            <li><Link to="/privacy">Privacy</Link></li>
+            <li><Link to="/terms">Terms</Link></li>
+            <li><button type="button" onClick={openCookieSettings}>Cookie settings</button></li>
+          </ul></div>
+          {SOCIAL.length > 0 && (
+            <div className="dft-follow"><h4>Follow us</h4>
+              <ul className="dft-social">{SOCIAL.map(([n, url, icon]) => <li key={n}><a href={url} target="_blank" rel="noreferrer" aria-label={n}>{icon}</a></li>)}</ul>
+            </div>
+          )}
+        </nav>
+        <div className="dft-bottom">
+          <Link to="/" className="dft-mark" aria-label="Dabba home">Dabba</Link>
+          <div className="dft-meta">
+            <p>Payments go straight to the baker. Dabba never holds money. Cake photos on this page are AI-generated illustrations.</p>
+            <p>© 2026 Dabba · Made in Pakistan · In early testing</p>
           </div>
-          <nav className="lp-foot-cols" aria-label="Footer">
-            <div><h4>Product</h4><a href="/#features">Features</a><a href="/#gallery">What bakers sell</a><a href="/#pricing">Pricing</a><a href="/#faq">Questions</a></div>
-            <div><h4>For bakers</h4><Link to="/login">Sign in</Link><Link to="/login">Create an order link</Link>{DEMO && <Link to="/s/cocoa-crumb">Sample bakery</Link>}{DEMO && <Link to="/s/cocoa-crumb/custom">Sample custom request</Link>}</div>
-            <div><h4>Company</h4><Link to="/privacy">Privacy</Link><Link to="/terms">Terms</Link><button type="button" className="linkbtn" onClick={openCookieSettings}>Cookie settings</button><a href="/#sources">Sources</a><span className="muted-f">Made in Pakistan</span></div>
-          </nav>
-        </div>
-        <div className="lp-foot-trust">
-          <span>Payments go straight to the baker. Dabba never holds money.</span>
-          <span>Payment screenshots are visible only to the baker.</span>
-        </div>
-        <div className="lp-foot-bottom">
-          <span>© 2026 Dabba. In early testing.</span>
-          <span>Cake photos on this page are AI-generated illustrations.</span>
         </div>
       </div>
     </footer>
@@ -341,8 +357,8 @@ export default function Landing() {
     setPageSEO({
       title: "Dabba · Preorders for home bakers",
       description: "Dabba gives home bakers one preorder link: menu with prices, daily limits, deposits and WhatsApp updates. Built for Pakistan.",
-      canonical: "https://dabba.vercel.app/",
-      ogImage: "https://dabba.vercel.app/img/tart.webp",
+      canonical: "https://dabba.devs.surf/",
+      ogImage: "https://dabba.devs.surf/img/tart.webp",
     });
   }, []);
   return (
@@ -431,18 +447,6 @@ export default function Landing() {
       </section>
 
       <Pricing />
-
-      <section className="lp-sec">
-        <div className="wrap narrow">
-          <div className="lp-head"><span className="eyebrow">What bakers say</span><h2>“I used to lose orders in DMs. Now they book themselves.”</h2></div>
-          <div className="lp-feat">
-            <div className="txt">
-              <p>“Before Dabba, I spent 3 hours a day replying to ‘price?’ messages. Now customers order from my link and I just bake. I went from about 10 orders a week to over 25 — and I actually have evenings free.”</p>
-              <p className="muted small" style={{ marginTop: 6 }}><b>— Sana Iqbal, Cocoa Crumb, Karachi</b> · Home baker since 2022</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <section id="faq" className="lp-sec alt">
         <div className="wrap narrow">

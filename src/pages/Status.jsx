@@ -76,7 +76,7 @@ export default function Status() {
         </div>
       )}
 
-      {o.status === "request" && <div className="sunk">{shop.name} is looking at your request and will send a price on WhatsApp. You can come back to this page any time.</div>}
+      {o.status === "request" && <Alert><AlertDescription>{shop.name} is looking at your request and will send a price on WhatsApp. You can come back to this page any time.</AlertDescription></Alert>}
 
       {o.status === "quoted" && (
         <div className="card stack">

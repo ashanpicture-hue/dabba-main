@@ -15,7 +15,7 @@ export default function Login() {
     setPageSEO({
       title: "Sign In · Dabba Baker Dashboard",
       description: "Sign in to your Dabba baker dashboard. Manage your menu, orders, baking list, and settings. One-time email link — no password needed.",
-      canonical: "https://dabba.vercel.app/login",
+      canonical: "https://dabba.devs.surf/login",
       noIndex: true,
     });
   }, []);

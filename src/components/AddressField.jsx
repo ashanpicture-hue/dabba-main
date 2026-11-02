@@ -51,7 +51,7 @@ export default function AddressField({ id = "addr", value, onChange, shop, label
         )}
       </div>
       <div className="row between" style={{ gap: 12, flexWrap: "nowrap", alignItems: "flex-start" }}>
-        <span id={`${id}-note`} className="small muted" style={{ flex: 1, minWidth: 0 }}>Checked against OpenStreetMap. Only the address is sent.</span>
+        <span id={`${id}-note`} className="small muted" style={{ flex: 1, minWidth: 0 }}>Checked with Geoapify. Only the address is sent.</span>
         <button type="button" className="btn sm ghost" style={{ flex: "none" }} onClick={() => check(true)} disabled={phase === "checking" || text.length < 8}>{phase === "done" ? "Check again" : "Check address"}</button>
       </div>
     </div>

@@ -1,19 +1,37 @@
 // Address lookup. Local rules run first (core.js); this adds one optional map check on top.
 //
-// Provider: OpenStreetMap Nominatim. Free, no key, CORS enabled. Its public usage policy applies:
-// at most 1 request per second, no search-as-you-type, no bulk use. We only look up after the
-// person finishes typing, and we cache. Before real traffic, point VITE_GEOCODER_URL at a
-// Nominatim-compatible endpoint you control or pay for (Geoapify, LocationIQ, self-hosted).
+// Provider: Geoapify Geocoding API. The key comes from VITE_GEOAPIFY_KEY (never hard-code it).
+// Geoapify keys are public in the browser bundle by design, so in the Geoapify dashboard restrict
+// the key to your domains (dabba.devs.surf, localhost). Free plan allows 5 requests per second.
+// We still only look up after the person finishes typing, and we cache.
 // Only the address text is sent. Never the name or phone number.
 import { assessAddress, lookupQuery, matchGeocode, combineAddress } from "./core.js";
 
-const ENDPOINT = import.meta.env.VITE_GEOCODER_URL || "https://nominatim.openstreetmap.org/search";
-const MIN_GAP_MS = 1100;
+const ENDPOINT = "https://api.geoapify.com/v1/geocode/search";
+const API_KEY = import.meta.env.VITE_GEOAPIFY_KEY;
+const MIN_GAP_MS = 300;
 const TIMEOUT_MS = 9000;
 
 let lastCall = 0;
 const cache = new Map();
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Geoapify result -> the Nominatim shape matchGeocode() already understands. */
+function toNominatim(r) {
+  return {
+    lat: r.lat,
+    lon: r.lon,
+    display_name: r.formatted || "",
+    address: {
+      house_number: r.housenumber,
+      road: r.street,
+      neighbourhood: r.neighbourhood,
+      suburb: r.suburb || r.district,
+      city: r.city || r.town || r.village,
+      state_district: r.county,
+    },
+  };
+}
 
 async function search(q, signal) {
   const gap = MIN_GAP_MS - (Date.now() - lastCall);
@@ -21,10 +39,11 @@ async function search(q, signal) {
   if (signal.aborted) throw new DOMException("Aborted", "AbortError");
   lastCall = Date.now();
   const url = new URL(ENDPOINT);
-  url.search = new URLSearchParams({ q, format: "jsonv2", addressdetails: "1", limit: "5", countrycodes: "pk", "accept-language": "en" });
+  url.search = new URLSearchParams({ text: q, format: "json", limit: "5", lang: "en", filter: "countrycode:pk", apiKey: API_KEY });
   const res = await fetch(url, { signal, headers: { Accept: "application/json" } });
   if (!res.ok) throw new Error(`Geocoder returned ${res.status}`);
-  return res.json();
+  const body = await res.json();
+  return (body.results || []).map(toNominatim);
 }
 
 /** Tries the full address, then without the house number, then just the last two parts (usually phase and area). */
@@ -36,12 +55,13 @@ function queriesFor(address, city) {
 
 /**
  * Check a delivery address. Always resolves to { status, title, lines } where status is
- * "ok" | "warn" | "error" | "unverified". A network failure is "unverified", never a thrown error,
- * so a flaky free service can't stop someone ordering.
+ * "ok" | "warn" | "error" | "unverified". A network failure or a missing key is "unverified",
+ * never a thrown error, so the geocoder can't stop someone ordering.
  */
 export async function verifyAddress(address, { city = "", signal } = {}) {
   const local = assessAddress(address);
   if (local.blocking) return combineAddress(local, null, { city });
+  if (!API_KEY) return combineAddress(local, null, { city });
 
   const key = `${city}|${local.parts.text.toLowerCase()}`;
   if (cache.has(key)) return cache.get(key);
@@ -61,7 +81,6 @@ export async function verifyAddress(address, { city = "", signal } = {}) {
     cache.set(key, out);
     return out;
   } catch {
-    // Aborted by the caller, timed out, offline or rate limited: fall back to local advice only.
     return combineAddress(local, null, { city });
   } finally {
     clearTimeout(timer);

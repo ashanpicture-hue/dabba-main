@@ -14,7 +14,41 @@ Dabba helps home bakers take preorders online without juggling Instagram DMs. Ba
 - [Baker Sign In](https://dabba.devs.surf/login): Sign-in page for bakers to access their dashboard.
 - [Baker Dashboard](https://dabba.devs.surf/app): Live order alerts, daily baking list, menu editor, recipe costing, and settings.
 
+## City pages (programmatic SEO)
+
+- [Home Bakery Preorder Link in Karachi](https://dabba.devs.surf/bakeries/karachi): Home bakers in Karachi taking preorders online with Dabba.
+- [Home Bakery Preorder Link in Lahore](https://dabba.devs.surf/bakeries/lahore): Home bakers in Lahore taking preorders online with Dabba.
+- [Home Bakery Preorder Link in Islamabad](https://dabba.devs.surf/bakeries/islamabad): Home bakers in Islamabad taking preorders online with Dabba.
+- [Home Bakery Preorder Link in Faisalabad](https://dabba.devs.surf/bakeries/faisalabad): Home bakers in Faisalabad taking preorders online with Dabba.
+- [Home Bakery Preorder Link in Rawalpindi](https://dabba.devs.surf/bakeries/rawalpindi): Home bakers in Rawalpindi taking preorders online with Dabba.
+- [Home Bakery Preorder Link in Multan](https://dabba.devs.surf/bakeries/multan): Home bakers in Multan taking preorders online with Dabba.
+- [Home Bakery Preorder Link in Peshawar](https://dabba.devs.surf/bakeries/peshawar): Home bakers in Peshawar taking preorders online with Dabba.
+- [Home Bakery Preorder Link in Quetta](https://dabba.devs.surf/bakeries/quetta): Home bakers in Quetta taking preorders online with Dabba.
+
+## Feature pages
+
+- [Daily Slot Limit](https://dabba.devs.surf/features/daily-slot-limit): Set how many orders you can bake per day. Full days close themselves automatically.
+- [Custom Cake Quote](https://dabba.devs.surf/features/custom-cake-quote): Quote custom cakes in one tap with prices that expire.
+- [Advance Payment](https://dabba.devs.surf/features/advance-payment): Ask for 50% or full payment upfront. Customers pay by Raast, bank, Easypaisa or JazzCash.
+- [WhatsApp Replies](https://dabba.devs.surf/features/whatsapp-replies): Ready-written WhatsApp messages for order confirmations, reminders, and thank you.
+- [Baking List](https://dabba.devs.surf/features/baking-list): Know what to bake every morning with daily totals by size and flavour.
+- [Recipe Costing](https://dabba.devs.surf/features/recipe-costing): Turn today's ingredient prices into cost and profit per item.
+
+## Comparison pages
+
+- [Dabba vs Instagram DMs](https://dabba.devs.surf/compare/instagram-dms): Dabba vs Instagram DMs for home bakery preorders.
+- [Dabba vs WhatsApp Business](https://dabba.devs.surf/compare/whatsapp-business): Dabba vs WhatsApp Business for home bakery orders.
+- [Dabba vs Google Forms](https://dabba.devs.surf/compare/google-forms): Dabba vs Google Forms for home bakery preorders.
+- [Dabba vs Indolj](https://dabba.devs.surf/compare/indolj): Dabba vs Indolj for home bakery preorders in Pakistan — your own order link, no commission.
+- [Dabba vs Linktree](https://dabba.devs.surf/compare/linktree): Dabba vs Linktree for home bakers — order link vs bio link.
+
+## Tool pages
+
+- [Cake Pricing Calculator](https://dabba.devs.surf/tools/cake-pricing-calculator): Price your cakes for profit. Enter ingredient costs, packaging, delivery, and time to see cost, profit, and margin per item.
+- [Recipe Costing Calculator](https://dabba.devs.surf/tools/recipe-costing-calculator): Calculate the cost of your recipes. See profit per item at today's ingredient prices.
+
 ## Optional reference
 
 - [Sources](https://dabba.devs.surf/#sources): Industry sources cited on the landing page, including bakery guides and Pakistan home baker features.
 - [FAQ](https://dabba.devs.surf/#faq): Frequently asked questions about payments, customer accounts, WhatsApp, alerts, pricing, and food licences.
+- [Pricing data](https://dabba.devs.surf/pricing.md): Structured pricing data for AI agents — Starter, Baker, and Bakery plans with prices, limits, and features.

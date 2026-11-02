@@ -18,8 +18,8 @@ export default function Terms() {
     setPageSEO({
       title: "Terms of Service · Dabba Preorders for Home Bakers",
       description: "Terms of service for Dabba preorder platform. Covers baker accounts, customer orders, payments, user content, prohibited uses, warranties, liability, and governing law (Pakistan).",
-      canonical: "https://dabba.vercel.app/terms",
-      ogImage: "https://dabba.vercel.app/img/tart.webp",
+      canonical: "https://dabba.devs.surf/terms",
+      ogImage: "https://dabba.devs.surf/img/tart.webp",
     });
     if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
   }, []);
@@ -30,7 +30,7 @@ export default function Terms() {
         <Link to="/" className="logo">Dabba</Link>
         <div>
           <h1 style={{ marginBottom: 6 }}>Terms of Service</h1>
-          <p className="muted" style={{ margin: 0 }}>Dabba is in demo mode; these terms will be updated as the service changes.</p>
+          <p className="muted" style={{ margin: 0 }}>Last updated: 2 November 2026. Dabba is in demo mode; these terms will be updated as the service changes.</p>
         </div>
 
         {/* Key changes block */}
@@ -38,8 +38,8 @@ export default function Terms() {
           <h3 style={{ fontSize: "1.1rem", margin: 0 }}>Key changes in this update</h3>
           <ul style={{ margin: 0, paddingInlineStart: 20 }}>
             <li>First version of Terms of Service for Dabba - no terms page existed before.</li>
-            <li>Drafted to match what the code actually does (see specs/legal/audit-2026-11-02.md).</li>
-            
+            <li>Drafted to match what the code actually does.</li>
+
             <li>No attorney review has been performed.</li>
           </ul>
         </section>
@@ -56,7 +56,7 @@ export default function Terms() {
 
         <S h="1. Acceptance of terms">
           <p className="muted" style={{ margin: 0 }}>
-            By accessing or using Dabba (<a href="https://dabba.vercel.app" target="_blank" rel="noreferrer">dabba.vercel.app</a>), you agree to these Terms of Service.
+            By accessing or using Dabba (<a href="https://dabba.devs.surf" target="_blank" rel="noreferrer">dabba.devs.surf</a>), you agree to these Terms of Service.
             If you do not agree, do not use the service.
           </p>
         </S>
@@ -95,7 +95,7 @@ export default function Terms() {
           <ul style={{ margin: 0, paddingInlineStart: 20 }}>
             <li><b>Dabba does not handle payments.</b> Customers pay bakers directly by bank, Raast, or wallet.</li>
             <li><b>Dabba charges no commission on orders.</b> Revenue comes only from monthly subscription plans (when paid plans begin after the pilot).</li>
-            <li>During the pilot, all features are free. After the pilot, plans are: Starter (free, up to 20 orders/month), Baker (Rs 1,499/month), Bakery (Rs 3,499/month). <span className="muted">(public/pricing.md)</span></li>
+            <li>During the pilot, all features are free. After the pilot, plans are: Starter (free, up to 20 orders/month), Baker (Rs 1,499/month), Bakery (Rs 3,499/month).</li>
             <li>Dabba will give 30 days' notice before any charge begins.</li>
             <li>No card is needed to start. Bakers can cancel any time.</li>
             <li>Prices exclude tax.</li>
@@ -173,9 +173,9 @@ export default function Terms() {
           </p>
         </S>
 
-        <SiteFooter />
         <Feedback role="visitor" prompt="Questions about these terms?" />
       </div>
+      <SiteFooter />
     </>
   );
 }
