@@ -464,16 +464,6 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="lp-sec">
-        <div className="wrap">
-          <div className="lp-final">
-            <h2>Spend your evenings baking, not replying.</h2>
-            <p>Your menu link, ready tonight.</p>
-            <Link to="/login" className="lp-btn solid" style={{ marginTop: 8 }}>Create your free order link</Link>
-          </div>
-        </div>
-      </section>
-
       <SiteFooter />
       <StickyCta show={!heroIn} />
       <Feedback role="visitor" prompt="Would this help your bakery? What's missing?" />
